@@ -1,0 +1,2871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Faithworks Trackers</title>
+<style>
+/* Tab bar */
+.tab-bar {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; background: #1B2A4A; padding: 8px; gap: 8px;
+}
+.tab-btn {
+  flex: 1; padding: 14px; border: none; border-radius: 10px;
+  font-size: 16px; font-weight: bold; cursor: pointer;
+  background: rgba(255,255,255,0.15); color: #fff;
+}
+.tab-btn.active { background: #D4A017; color: #1B2A4A; }
+.tab-page { display: none; }
+.tab-page.active { display: block; }
+body { margin: 0; font-family: -apple-system, sans-serif; }
+.tab-mileage :root{
+        color-scheme: light dark;
+        --navy: #1B2A4A;
+        --navy-deep: #121E36;
+        --gold: #D4A017;
+        --gold-soft: #F5C945;
+        --bg: #F4F1EA;
+        --surface: #FFFFFF;
+        --surface-2: #EDEAE2;
+        --ink: #1B2A4A;
+        --ink-soft: #4A5570;
+        --line: #DCD6C8;
+        --danger: #B3372C;
+        --danger-bg: #FBEAE7;
+        --warn-bg: #FFF6DE;
+        --warn-line: #E3B93B;
+        --warn-ink: #5C4605;
+        --ok: #2E7D4F;
+        --shadow: 0 2px 10px rgba(27, 42, 74, 0.10);
+        --radius: 14px;
+      }
+@media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0E1626;
+          --surface: #1B2A4A;
+          --surface-2: #243457;
+          --ink: #F2EEE3;
+          --ink-soft: #AEB8CE;
+          --line: #33436B;
+          --danger: #FF9A8F;
+          --danger-bg: #3A2320;
+          --warn-bg: #2E2712;
+          --warn-line: #8A6D1F;
+          --warn-ink: #F0D488;
+          --ok: #7BD3A0;
+          --shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+        }
+}
+.tab-mileage *{ box-sizing: border-box; }
+.tab-mileage [hidden]{ display: none !important; }
+.tab-mileage html{ -webkit-text-size-adjust: 100%; }
+.tab-mileage body{
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.45;
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+.tab-mileage .wrap{ max-width: 560px; margin: 0 auto; padding: 0 16px 40px; }
+.tab-mileage /* ---------- Header ---------- */
+      header.brand{
+        background: var(--navy);
+        color: #F2EEE3;
+        padding: calc(18px + env(safe-area-inset-top)) 16px 18px;
+        border-bottom: 4px solid var(--gold);
+      }
+.tab-mileage .brand-inner{ max-width: 560px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
+.tab-mileage .brand-mark{
+        width: 44px; height: 44px; flex: 0 0 auto;
+        border: 2px solid var(--gold); border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--gold); font-family: Georgia, "Times New Roman", serif;
+        font-size: 22px; font-weight: 700; line-height: 1;
+      }
+.tab-mileage .brand h1{ margin: 0; font-size: 21px; font-weight: 700; letter-spacing: 0.01em; }
+.tab-mileage .brand .org{ margin: 0; font-size: 12.5px; color: #C9CFE0; letter-spacing: 0.06em; text-transform: uppercase; }
+.tab-mileage .brand .vehicle-line{ margin: 2px 0 0; font-size: 13px; color: var(--gold-soft); }
+.tab-mileage /* ---------- Banners ---------- */
+      .banner{
+        margin-top: 16px; border-radius: var(--radius); padding: 14px 16px;
+        display: flex; gap: 12px; align-items: flex-start;
+      }
+.tab-mileage .banner .b-icon{ flex: 0 0 auto; margin-top: 1px; }
+.tab-mileage .banner h2{ margin: 0 0 4px; font-size: 15px; }
+.tab-mileage .banner p{ margin: 0; font-size: 14px; }
+.tab-mileage .banner .b-close{
+        margin-left: auto; flex: 0 0 auto; background: none; border: 0; cursor: pointer;
+        font-size: 20px; line-height: 1; padding: 2px 4px; color: inherit;
+      }
+.tab-mileage .banner-warn{ background: var(--warn-bg); border: 1.5px solid var(--warn-line); color: var(--warn-ink); }
+.tab-mileage .banner-export{ background: var(--surface); border: 1.5px solid var(--gold); color: var(--ink); box-shadow: var(--shadow); }
+.tab-mileage .banner-export .mini-btn{ margin-top: 10px; }
+.tab-mileage /* ---------- Cards & sections ---------- */
+      .card{
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--radius); box-shadow: var(--shadow);
+        padding: 18px; margin-top: 16px;
+      }
+.tab-mileage .section-title{
+        margin: 26px 2px 0; font-size: 13px; font-weight: 700;
+        letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-soft);
+      }
+.tab-mileage /* ---------- Drive panel ---------- */
+      .drive-status{ text-align: center; }
+.tab-mileage .drive-status .state-label{ font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); margin: 0; }
+.tab-mileage .timer{
+        font-size: 52px; font-weight: 700; font-variant-numeric: tabular-nums;
+        letter-spacing: 0.02em; margin: 6px 0 2px; color: var(--ink);
+      }
+.tab-mileage .drive-meta{ margin: 0 0 14px; font-size: 14px; color: var(--ink-soft); }
+.tab-mileage .big-btn{
+        display: block; width: 100%; border: 0; cursor: pointer;
+        border-radius: 16px; padding: 20px 16px;
+        font-size: 21px; font-weight: 800; letter-spacing: 0.01em;
+        min-height: 68px; touch-action: manipulation;
+      }
+.tab-mileage .big-btn:active{ transform: scale(0.985); }
+.tab-mileage .btn-start{ background: var(--gold); color: #1B2A4A; box-shadow: 0 4px 0 #A67F10; }
+.tab-mileage .btn-end{ background: var(--danger); color: #fff; box-shadow: 0 4px 0 rgba(0,0,0,0.25); }
+@media (prefers-color-scheme: dark) { .btn-end { color: #1B2A4A; background: #E8836F; }
+}
+.tab-mileage .pulse-dot{
+        display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+        background: var(--danger); margin-right: 7px; vertical-align: middle;
+        animation: pulse 1.4s ease-in-out infinite;
+      }
+@keyframes pulse { 0%, 100% { opacity: 1; }
+.tab-mileage 50%{ opacity: 0.25; }
+}
+@media (prefers-reduced-motion: reduce) { .pulse-dot { animation: none; }
+.tab-mileage .big-btn:active{ transform: none; }
+}
+.tab-mileage /* ---------- Forms ---------- */
+      label.f-label{ display: block; font-size: 13px; font-weight: 700; margin: 14px 0 5px; color: var(--ink); }
+.tab-mileage label.f-label:first-child{ margin-top: 0; }
+.tab-mileage input[type="text"], .tab-mileage input[type="number"], .tab-mileage input[type="date"], .tab-mileage input[type="time"], .tab-mileage textarea, .tab-mileage select{
+        width: 100%; font: inherit; font-size: 16px; color: var(--ink);
+        background: var(--surface); border: 1.5px solid var(--line);
+        border-radius: 10px; padding: 11px 12px; appearance: none;
+      }
+.tab-mileage input:focus, .tab-mileage textarea:focus, .tab-mileage select:focus{ outline: 2px solid var(--gold); outline-offset: 1px; border-color: var(--gold); }
+.tab-mileage textarea{ resize: vertical; min-height: 44px; }
+.tab-mileage .field-row{ display: flex; gap: 10px; }
+.tab-mileage .field-row > div{ flex: 1; min-width: 0; }
+.tab-mileage .seg{ display: flex; background: var(--surface-2); border-radius: 10px; padding: 4px; gap: 4px; }
+.tab-mileage .seg button{
+        flex: 1; border: 0; background: transparent; cursor: pointer; font: inherit;
+        font-size: 14.5px; font-weight: 600; padding: 9px 6px; border-radius: 7px; color: var(--ink-soft);
+        min-height: 44px; touch-action: manipulation;
+      }
+.tab-mileage .seg button[aria-pressed="true"]{ background: var(--surface); color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,0.18); }
+.tab-mileage .hint{ font-size: 13px; color: var(--ink-soft); margin: 6px 0 0; }
+.tab-mileage .computed{ font-size: 15px; margin: 10px 0 0; }
+.tab-mileage .computed strong{ color: var(--ok); }
+.tab-mileage .form-error{ color: var(--danger); font-size: 14px; margin: 10px 0 0; min-height: 1.2em; }
+.tab-mileage .btn{
+        display: inline-block; border: 0; cursor: pointer; font: inherit; font-weight: 700;
+        border-radius: 10px; padding: 12px 18px; font-size: 15.5px; min-height: 48px;
+        touch-action: manipulation; text-align: center;
+      }
+.tab-mileage .btn-gold{ background: var(--gold); color: #1B2A4A; }
+.tab-mileage .btn-navy{ background: var(--navy); color: #F5C945; border: 1px solid var(--gold); }
+@media (prefers-color-scheme: dark) { .btn-navy { background: var(--surface-2); }
+}
+.tab-mileage .btn-ghost{ background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+.tab-mileage .btn-block{ display: block; width: 100%; }
+.tab-mileage .btn-row{ display: flex; gap: 10px; margin-top: 16px; }
+.tab-mileage .btn-row .btn{ flex: 1; }
+.tab-mileage .mini-btn{
+        display: inline-block; border: 0; cursor: pointer; font: inherit; font-weight: 700;
+        border-radius: 8px; padding: 9px 14px; font-size: 14px; min-height: 40px;
+        background: var(--gold); color: #1B2A4A; touch-action: manipulation;
+      }
+.tab-mileage /* ---------- Stats ---------- */
+      .stats{ display: flex; gap: 10px; margin-top: 16px; }
+.tab-mileage .stat{
+        flex: 1; min-width: 0; background: var(--navy); color: #F2EEE3;
+        border-radius: var(--radius); padding: 14px 12px; text-align: center;
+        border-bottom: 3px solid var(--gold);
+      }
+.tab-mileage .stat .num{ font-size: 24px; font-weight: 800; font-variant-numeric: tabular-nums; display: block; }
+.tab-mileage .stat .lbl{ font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: #C9CFE0; display: block; margin-top: 2px; }
+.tab-mileage /* ---------- Trip log ---------- */
+      .month-head{
+        display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+        margin: 22px 2px 8px;
+      }
+.tab-mileage .month-head h3{ margin: 0; font-size: 17px; }
+.tab-mileage .month-head .m-total{ font-size: 13.5px; color: var(--ink-soft); white-space: nowrap; }
+.tab-mileage .trip{
+        background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 13px 15px; margin-bottom: 10px; box-shadow: var(--shadow);
+      }
+.tab-mileage .trip-top{ display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.tab-mileage .trip-miles{ font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.tab-mileage .trip-miles .val{ font-size: 13px; font-weight: 600; color: var(--ok); margin-left: 6px; }
+.tab-mileage .trip-date{ font-size: 13.5px; color: var(--ink-soft); white-space: nowrap; }
+.tab-mileage .trip-purpose{ margin: 3px 0 0; font-size: 15px; }
+.tab-mileage .trip-purpose.empty{ color: var(--ink-soft); font-style: italic; }
+.tab-mileage .trip-sub{ margin: 3px 0 0; font-size: 13px; color: var(--ink-soft); }
+.tab-mileage .trip-actions{ display: flex; gap: 8px; margin-top: 10px; }
+.tab-mileage .trip-actions button{
+        flex: 1; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+        border-radius: 8px; padding: 9px; min-height: 40px; touch-action: manipulation;
+        background: var(--surface-2); color: var(--ink); border: 1px solid var(--line);
+      }
+.tab-mileage .trip-actions button.del{ color: var(--danger); }
+.tab-mileage .empty-state{ text-align: center; color: var(--ink-soft); padding: 26px 10px; font-size: 15px; }
+.tab-mileage .empty-state strong{ color: var(--ink); display: block; font-size: 16.5px; margin-bottom: 4px; }
+.tab-mileage /* ---------- Modal ---------- */
+      .modal-backdrop{
+        position: fixed; inset: 0; background: rgba(10, 16, 30, 0.62);
+        display: none; align-items: flex-end; justify-content: center; z-index: 50;
+      }
+.tab-mileage .modal-backdrop.open{ display: flex; }
+.tab-mileage .modal{
+        background: var(--surface); color: var(--ink); width: 100%; max-width: 560px;
+        max-height: 92vh; overflow-y: auto; border-radius: 20px 20px 0 0;
+        padding: 20px 18px calc(20px + env(safe-area-inset-bottom));
+      }
+@media (min-width: 620px) {
+        .modal-backdrop { align-items: center; }
+.tab-mileage .modal{ border-radius: 20px; }
+}
+.tab-mileage .modal h2{ margin: 0 0 4px; font-size: 19px; }
+.tab-mileage .modal .sub{ margin: 0; font-size: 14px; color: var(--ink-soft); }
+.tab-mileage footer.note{ margin-top: 30px; text-align: center; font-size: 12.5px; color: var(--ink-soft); }
+.tab-mileage .sr-only{ position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.tab-hours :root{
+        --navy: #1B2A4A;
+        --navy-deep: #121E36;
+        --gold: #D4A017;
+        --gold-soft: #F3C94B;
+        --bg: #EEF1F6;
+        --surface: #FFFFFF;
+        --surface-2: #F4F6FA;
+        --ink: #1B2A4A;
+        --ink-soft: #48536B;
+        --ink-faint: #76809A;
+        --line: #D8DEE9;
+        --danger: #B3352B;
+        --danger-bg: #FBEDEB;
+        --warn-bg: #FDF3D7;
+        --warn-line: #E3B93B;
+        --warn-ink: #5C4306;
+        --shadow: 0 10px 30px rgba(27, 42, 74, 0.10);
+        --radius: 18px;
+      }
+@media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0C1322;
+          --surface: #16223B;
+          --surface-2: #1B2A4A;
+          --ink: #EDF1F8;
+          --ink-soft: #B9C2D6;
+          --ink-faint: #8491AC;
+          --line: #2C3C5E;
+          --danger: #F0837A;
+          --danger-bg: #3A1F1E;
+          --warn-bg: #33290E;
+          --warn-line: #8A6D1D;
+          --warn-ink: #F3D98B;
+          --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+        }
+}
+.tab-hours *{ box-sizing: border-box; }
+.tab-hours html{ -webkit-text-size-adjust: 100%; }
+.tab-hours body{
+        margin: 0;
+        font-family: "Public Sans", system-ui, -apple-system, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        line-height: 1.45;
+      }
+.tab-hours .wrap{
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 0 16px calc(40px + env(safe-area-inset-bottom));
+      }
+.tab-hours h1, .tab-hours h2, .tab-hours h3{ font-family: "Sora", "Public Sans", sans-serif; margin: 0; }
+.tab-hours /* ---------- Brand band ---------- */
+      .brand{
+        background: var(--navy);
+        color: #fff;
+        margin: 0 -16px;
+        padding: calc(20px + env(safe-area-inset-top)) 20px 22px;
+        border-bottom: 4px solid var(--gold);
+      }
+.tab-hours .brand .org{
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--gold-soft);
+      }
+.tab-hours .brand h1{
+        font-size: 30px;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin-top: 4px;
+      }
+.tab-hours .brand p{
+        margin: 6px 0 0;
+        font-size: 14px;
+        color: #C7D0E2;
+        max-width: 46ch;
+      }
+.tab-hours /* ---------- Banners ---------- */
+      .banner{
+        display: flex;
+        gap: 12px;
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-top: 18px;
+        border: 1.5px solid var(--warn-line);
+        background: var(--warn-bg);
+        color: var(--warn-ink);
+        box-shadow: var(--shadow);
+      }
+.tab-hours .banner svg{ flex: 0 0 auto; margin-top: 2px; }
+.tab-hours .banner h2{ font-size: 16px; font-weight: 700; }
+.tab-hours .banner p{ margin: 5px 0 0; font-size: 14px; }
+.tab-hours .banner .actions{ display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.tab-hours .banner[hidden]{ display: none; }
+.tab-hours /* ---------- Buttons ---------- */
+      .btn{
+        font: inherit;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        padding: 11px 16px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 15px;
+        -webkit-tap-highlight-color: transparent;
+      }
+.tab-hours .btn:active{ transform: translateY(1px); }
+.tab-hours .btn-gold{ background: var(--gold); color: #1B2A4A; }
+.tab-hours .btn-navy{ background: var(--navy); color: #fff; }
+@media (prefers-color-scheme: dark) {
+        .btn-navy { background: var(--gold); color: #1B2A4A; }
+}
+.tab-hours .btn-ghost{
+        background: transparent;
+        color: var(--ink);
+        border: 1.5px solid var(--line);
+      }
+.tab-hours .btn-small{ padding: 8px 12px; font-size: 13.5px; border-radius: 10px; }
+.tab-hours .icon-btn{
+        font: inherit;
+        border: 1.5px solid var(--line);
+        background: var(--surface);
+        color: var(--ink-soft);
+        width: 38px; height: 38px;
+        border-radius: 10px;
+        display: inline-flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+.tab-hours .icon-btn.danger{ color: var(--danger); }
+.tab-hours /* ---------- Clock card ---------- */
+      .clock-card{
+        background: var(--surface);
+        border-radius: 22px;
+        box-shadow: var(--shadow);
+        padding: 22px 20px 24px;
+        margin-top: 18px;
+        border-top: 5px solid var(--gold);
+      }
+.tab-hours .clock-card .status-line{
+        display: flex; align-items: center; gap: 8px;
+        font-size: 13px; font-weight: 700;
+        letter-spacing: 0.1em; text-transform: uppercase;
+        color: var(--ink-faint);
+      }
+.tab-hours .dot{ width: 9px; height: 9px; border-radius: 50%; background: var(--ink-faint); }
+.tab-hours .dot.live{ background: #2E9E5B; box-shadow: 0 0 0 4px rgba(46, 158, 91, 0.18); animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 3px rgba(46,158,91,.22);}
+.tab-hours 50%{ box-shadow: 0 0 0 7px rgba(46,158,91,.08);}
+}
+@media (prefers-reduced-motion: reduce) {
+        .dot.live { animation: none; }
+.tab-hours .btn:active{ transform: none; }
+}
+.tab-hours .timer{
+        font-family: "IBM Plex Mono", ui-monospace, monospace;
+        font-variant-numeric: tabular-nums;
+        font-size: clamp(52px, 15vw, 76px);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        text-align: center;
+        margin: 14px 0 4px;
+        color: var(--ink);
+      }
+.tab-hours .timer-sub{ text-align: center; color: var(--ink-soft); font-size: 14px; min-height: 20px; }
+.tab-hours .timer-sub strong{ color: var(--ink); }
+.tab-hours label.field{ display: block; margin-top: 16px; }
+.tab-hours label.field span{
+        display: block; font-size: 13px; font-weight: 700;
+        letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-soft);
+        margin-bottom: 6px;
+      }
+.tab-hours input[type="text"], .tab-hours input[type="date"], .tab-hours input[type="time"], .tab-hours input[type="datetime-local"]{
+        font: inherit;
+        font-size: 16px; /* prevents iOS zoom on focus */
+        width: 100%;
+        padding: 13px 14px;
+        border: 1.5px solid var(--line);
+        border-radius: 12px;
+        background: var(--surface-2);
+        color: var(--ink);
+      }
+.tab-hours input:focus{ outline: 2px solid var(--gold); outline-offset: 1px; border-color: var(--gold); }
+.tab-hours .form-error{
+        display: none;
+        margin-top: 12px;
+        background: var(--danger-bg);
+        color: var(--danger);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 14px; font-weight: 600;
+      }
+.tab-hours .form-error.show{ display: block; }
+.tab-hours .big-btn{
+        width: 100%;
+        margin-top: 20px;
+        padding: 20px;
+        font-size: 21px;
+        font-weight: 800;
+        font-family: "Sora", sans-serif;
+        border-radius: 16px;
+        border: none;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center; gap: 12px;
+        -webkit-tap-highlight-color: transparent;
+      }
+.tab-hours .big-btn:active{ transform: translateY(1px); }
+.tab-hours .btn-clockin{ background: var(--gold); color: #1B2A4A; box-shadow: 0 8px 20px rgba(212, 160, 23, 0.35); }
+.tab-hours .btn-clockout{ background: var(--danger); color: #fff; box-shadow: 0 8px 20px rgba(179, 53, 43, 0.30); }
+@media (prefers-color-scheme: dark) {
+        .btn-clockout { background: #C0453B; }
+}
+.tab-hours .active-meta{
+        margin-top: 16px;
+        background: var(--surface-2);
+        border: 1.5px solid var(--line);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 14.5px;
+      }
+.tab-hours .active-meta div + div{ margin-top: 4px; }
+.tab-hours .active-meta .k{ color: var(--ink-faint); font-weight: 600; }
+.tab-hours /* ---------- Sections ---------- */
+      section{ margin-top: 30px; }
+.tab-hours .section-head{
+        display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+        margin-bottom: 12px;
+      }
+.tab-hours .section-head h2{ font-size: 20px; font-weight: 700; }
+.tab-hours .section-head .sub{ color: var(--ink-faint); font-size: 13.5px; }
+.tab-hours .stat-row{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.tab-hours .stat{
+        background: var(--surface);
+        border-radius: 16px;
+        padding: 14px 12px;
+        box-shadow: var(--shadow);
+        text-align: center;
+      }
+.tab-hours .stat .num{ font-family: "Sora", sans-serif; font-size: 24px; font-weight: 800; color: var(--navy); }
+@media (prefers-color-scheme: dark) { .stat .num { color: var(--gold-soft); }
+}
+.tab-hours .stat .lbl{ font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); margin-top: 2px; }
+.tab-hours .totals-list{ display: grid; gap: 10px; }
+.tab-hours .total-card{
+        background: var(--surface);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        padding: 14px 16px;
+        display: flex; align-items: center; gap: 14px;
+      }
+.tab-hours .avatar{
+        width: 44px; height: 44px; border-radius: 50%;
+        background: var(--navy); color: var(--gold-soft);
+        font-family: "Sora", sans-serif; font-weight: 700; font-size: 16px;
+        display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+      }
+.tab-hours .total-card .who{ flex: 1 1 auto; min-width: 0; }
+.tab-hours .total-card .who .name{ font-weight: 700; font-size: 16px; overflow-wrap: anywhere; }
+.tab-hours .total-card .who .detail{ color: var(--ink-faint); font-size: 13px; }
+.tab-hours .total-card .hrs{ text-align: right; }
+.tab-hours .total-card .hrs .big{ font-family: "Sora", sans-serif; font-weight: 800; font-size: 21px; }
+.tab-hours .total-card .hrs .small{ color: var(--ink-faint); font-size: 12px; }
+.tab-hours /* ---------- Log ---------- */
+      .month-group{ margin-top: 20px; }
+.tab-hours .month-head{
+        display: flex; align-items: baseline; justify-content: space-between;
+        padding: 0 2px 8px;
+        border-bottom: 2px solid var(--gold);
+        margin-bottom: 10px;
+      }
+.tab-hours .month-head h3{ font-size: 16.5px; font-weight: 700; }
+.tab-hours .month-head .mh-total{ font-size: 13.5px; font-weight: 700; color: var(--ink-soft); }
+.tab-hours .entry{
+        background: var(--surface);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        padding: 13px 14px;
+        display: flex; gap: 12px; align-items: flex-start;
+        margin-bottom: 9px;
+      }
+.tab-hours .entry .main{ flex: 1 1 auto; min-width: 0; }
+.tab-hours .entry .act{ font-weight: 700; font-size: 15.5px; overflow-wrap: anywhere; }
+.tab-hours .entry .meta{ color: var(--ink-soft); font-size: 13.5px; margin-top: 2px; }
+.tab-hours .entry .meta .who-name{ font-weight: 600; color: var(--ink); }
+.tab-hours .entry .dur{
+        font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 14px;
+        background: var(--surface-2); border: 1.5px solid var(--line);
+        padding: 4px 9px; border-radius: 999px; white-space: nowrap;
+      }
+.tab-hours .entry .row-actions{ display: flex; gap: 6px; }
+.tab-hours .empty{
+        background: var(--surface);
+        border: 1.5px dashed var(--line);
+        border-radius: 16px;
+        padding: 26px 18px;
+        text-align: center;
+        color: var(--ink-faint);
+        font-size: 14.5px;
+      }
+.tab-hours .log-actions{ display: flex; flex-wrap: wrap; gap: 9px; margin-top: 14px; }
+.tab-hours .log-actions .btn{ flex: 1 1 150px; justify-content: center; }
+.tab-hours /* ---------- Overlay forms ---------- */
+      .overlay{
+        position: fixed; inset: 0;
+        background: rgba(10, 16, 30, 0.55);
+        display: none;
+        align-items: flex-end;
+        justify-content: center;
+        z-index: 50;
+        padding: 0;
+      }
+.tab-hours .overlay.open{ display: flex; }
+.tab-hours .sheet{
+        background: var(--surface);
+        color: var(--ink);
+        width: 100%; max-width: 680px;
+        max-height: 92vh; overflow-y: auto;
+        border-radius: 22px 22px 0 0;
+        padding: 22px 20px calc(22px + env(safe-area-inset-bottom));
+      }
+@media (min-width: 640px) {
+        .overlay { align-items: center; padding: 20px; }
+.tab-hours .sheet{ border-radius: 22px; }
+}
+.tab-hours .sheet h2{ font-size: 20px; font-weight: 700; }
+.tab-hours .sheet p.lede{ color: var(--ink-soft); font-size: 14px; margin: 6px 0 0; }
+.tab-hours .two-col{ display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tab-hours .sheet .actions{ display: flex; gap: 10px; margin-top: 22px; }
+.tab-hours .sheet .actions .btn{ flex: 1; justify-content: center; padding: 14px; }
+.tab-hours footer{
+        margin-top: 36px;
+        text-align: center;
+        color: var(--ink-faint);
+        font-size: 13px;
+      }
+.tab-hours footer .tip{
+        background: var(--surface);
+        border-radius: 14px;
+        padding: 13px 16px;
+        box-shadow: var(--shadow);
+        color: var(--ink-soft);
+        text-align: left;
+        display: flex; gap: 10px;
+      }
+.tab-hours footer .tip svg{ flex: 0 0 auto; margin-top: 1px; }
+.tab-hours footer p.brand-line{ margin-top: 16px; }
+
+</style>
+</head>
+<body>
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('mileage', this)">🚗 Mileage</button>
+  <button class="tab-btn" onclick="switchTab('hours', this)">⏱ Hours</button>
+</div>
+<div id="page-mileage" class="tab-page active"><div class="tab-mileage">
+<header class="brand">
+      <div class="brand-inner">
+        <div class="brand-mark" aria-hidden="true">F</div>
+        <div>
+          <p class="org">Faithworks Foundation Inc.</p>
+          <h1>Mileage Tracker</h1>
+          <p class="vehicle-line" id="m-vehicleLine" hidden></p>
+        </div>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <!-- First-launch storage warning -->
+      <div class="banner banner-warn" id="m-warnBanner" role="alert" hidden>
+        <svg class="b-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 2.5 20h19L12 3Z" fill="#D4A017" stroke="#8A6D1F" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 9.5v5" stroke="#1B2A4A" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.3" fill="#1B2A4A"/></svg>
+        <div>
+          <h2>Your trips live on this phone only</h2>
+          <p>Trips are saved in this browser's storage on this device — not on a server. If you clear your browser data, switch browsers, or lose the phone, the log is gone. Use <strong>Export CSV</strong> regularly as your backup (you'll get a reminder after every 5 trips).</p>
+        </div>
+        <button class="b-close" id="m-warnDismiss" aria-label="Dismiss warning">&times;</button>
+      </div>
+
+      <!-- Export reminder -->
+      <div class="banner banner-export" id="m-exportBanner" hidden>
+        <svg class="b-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4" stroke="#D4A017" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 17v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" stroke="#D4A017" stroke-width="2.2" stroke-linecap="round"/></svg>
+        <div>
+          <h2>Time to back up your log</h2>
+          <p id="m-exportBannerText">You've logged 5 trips since your last export. Download a CSV copy so your records are safe.</p>
+          <button class="mini-btn" id="m-exportBannerBtn" type="button">Export CSV now</button>
+        </div>
+        <button class="b-close" id="m-exportDismiss" aria-label="Dismiss export reminder">&times;</button>
+      </div>
+
+      <!-- Drive panel -->
+      <section class="card drive-status" aria-label="Drive timer">
+        <div id="m-idleState">
+          <p class="state-label">Not driving</p>
+          <p class="timer" aria-hidden="true">0:00:00</p>
+          <p class="drive-meta">Tap start when you pull out. You'll enter the miles when you arrive — this page doesn't track GPS in the background.</p>
+          <button class="big-btn btn-start" id="m-startBtn" type="button">Start drive</button>
+        </div>
+        <div id="m-drivingState" hidden>
+          <p class="state-label"><span class="pulse-dot" aria-hidden="true"></span>Driving now</p>
+          <p class="timer" id="m-timerDisplay" role="timer" aria-label="Elapsed drive time">0:00:00</p>
+          <p class="drive-meta" id="m-startedMeta"></p>
+          <button class="big-btn btn-end" id="m-endBtn" type="button">End drive</button>
+        </div>
+      </section>
+
+      <!-- Totals -->
+      <div class="stats" aria-label="Totals">
+        <div class="stat"><span class="num" id="m-statMiles">0</span><span class="lbl">Total miles</span></div>
+        <div class="stat"><span class="num" id="m-statTrips">0</span><span class="lbl">Trips</span></div>
+        <div class="stat"><span class="num" id="m-statValue">$0.00</span><span class="lbl">Deductible est.</span></div>
+      </div>
+
+      <!-- Actions -->
+      <div class="btn-row">
+        <button class="btn btn-navy" id="m-addTripBtn" type="button">+ Add a trip</button>
+        <button class="btn btn-gold" id="m-exportBtn" type="button">Export CSV</button>
+      </div>
+
+      <!-- Trip log -->
+      <h2 class="section-title">Trip log</h2>
+      <div id="m-tripLog"></div>
+
+      <!-- Settings -->
+      <h2 class="section-title">Settings</h2>
+      <section class="card" aria-label="Settings">
+        <form id="m-settingsForm">
+          <label class="f-label" for="vehicleInput">Vehicle</label>
+          <input type="text" id="m-vehicleInput" placeholder="e.g. 2019 Honda CR-V" autocomplete="off" />
+          <label class="f-label" for="rateInput">Rate per mile ($)</label>
+          <input type="number" id="m-rateInput" inputmode="decimal" step="0.001" min="0" placeholder="0.14" />
+          <p class="hint">The IRS charitable mileage rate is $0.14/mile. Change it here if you track a different rate.</p>
+          <p class="computed" id="m-deductibleLine"></p>
+          <div class="btn-row">
+            <button class="btn btn-gold" type="submit">Save settings</button>
+          </div>
+          <p class="form-error" id="m-settingsMsg" role="status"></p>
+        </form>
+      </section>
+
+      <footer class="note">Faithworks Foundation Inc. &middot; Be the Light. Be the Hope.</footer>
+    </div>
+
+    <!-- Finish-drive / add / edit modal -->
+    <div class="modal-backdrop" id="m-modalBackdrop">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <h2 id="m-modalTitle">Finish drive</h2>
+        <p class="sub" id="m-modalSub"></p>
+        <form id="m-tripForm" novalidate>
+          <div id="m-dateTimeFields" hidden>
+            <div class="field-row">
+              <div>
+                <label class="f-label" for="fDate">Date</label>
+                <input type="date" id="m-fDate" />
+              </div>
+              <div>
+                <label class="f-label" for="fTime">Start time</label>
+                <input type="time" id="m-fTime" />
+              </div>
+            </div>
+            <label class="f-label" for="fDuration">Duration (minutes, optional)</label>
+            <input type="number" id="m-fDuration" inputmode="numeric" min="0" step="1" placeholder="e.g. 35" />
+          </div>
+
+          <label class="f-label">How do you want to enter miles?</label>
+          <div class="seg" role="group" aria-label="Miles entry method">
+            <button type="button" id="m-segMiles" aria-pressed="true">Enter miles</button>
+            <button type="button" id="m-segOdo" aria-pressed="false">Odometer</button>
+          </div>
+
+          <div id="m-milesField">
+            <label class="f-label" for="fMiles">Miles driven</label>
+            <input type="number" id="m-fMiles" inputmode="decimal" step="0.1" min="0" placeholder="e.g. 12.4" />
+          </div>
+
+          <div id="m-odoFields" hidden>
+            <div class="field-row">
+              <div>
+                <label class="f-label" for="fStartOdo">Starting odometer</label>
+                <input type="number" id="m-fStartOdo" inputmode="decimal" step="0.1" min="0" placeholder="e.g. 84,210" />
+              </div>
+              <div>
+                <label class="f-label" for="fEndOdo">Ending odometer</label>
+                <input type="number" id="m-fEndOdo" inputmode="decimal" step="0.1" min="0" placeholder="e.g. 84,236" />
+              </div>
+            </div>
+            <p class="computed" id="m-odoComputed" aria-live="polite"></p>
+          </div>
+
+          <label class="f-label" for="fPurpose">Purpose</label>
+          <input type="text" id="m-fPurpose" placeholder="e.g. Picked up clothing donations at the Hilton" autocomplete="off" list="purposeList" />
+          <datalist id="m-purposeList"></datalist>
+
+          <p class="form-error" id="m-formError" role="alert"></p>
+          <div class="btn-row">
+            <button class="btn btn-ghost" type="button" id="m-cancelBtn">Cancel</button>
+            <button class="btn btn-gold" type="submit" id="m-saveTripBtn">Save trip</button>
+          </div>
+          <div class="btn-row" id="m-discardRow" hidden>
+            <button class="btn btn-ghost" type="button" id="m-discardBtn" style="color:var(--danger)">Discard this drive</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Delete confirm modal -->
+    <div class="modal-backdrop" id="m-confirmBackdrop">
+      <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle">
+        <h2 id="m-confirmTitle">Delete this trip?</h2>
+        <p class="sub" id="m-confirmText"></p>
+        <div class="btn-row">
+          <button class="btn btn-ghost" type="button" id="m-confirmCancel">Keep it</button>
+          <button class="btn" type="button" id="m-confirmDelete" style="background:var(--danger);color:#fff">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    (function () {
+      "use strict";
+
+      var LS_KEYS = {
+        trips: "faithworks.mileage.trips.v1",
+        settings: "faithworks.mileage.settings.v1",
+        current: "faithworks.mileage.currentTrip.v1",
+        meta: "faithworks.mileage.meta.v1"
+      };
+
+      function loadJSON(key, fallback) {
+        try {
+          var raw = localStorage.getItem(key);
+          if (!raw) return fallback;
+          var parsed = JSON.parse(raw);
+          return parsed == null ? fallback : parsed;
+        } catch (e) { return fallback; }
+      }
+      function saveJSON(key, value) {
+        try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+      }
+
+      var trips = loadJSON(LS_KEYS.trips, []);
+      if (!Array.isArray(trips)) trips = [];
+      var settings = loadJSON(LS_KEYS.settings, { vehicle: "", rate: 0.14 });
+      if (typeof settings.rate !== "number" || isNaN(settings.rate) || settings.rate < 0) settings.rate = 0.14;
+      if (typeof settings.vehicle !== "string") settings.vehicle = "";
+      var meta = loadJSON(LS_KEYS.meta, { warned: false, sinceExport: 0, bannerDismissedAt: 0 });
+      var currentTrip = loadJSON(LS_KEYS.current, null);
+      var timerId = null;
+
+      function $(id) { return document.getElementById(id); }
+
+      function uid() {
+        return "t" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      }
+      function fmtMiles(n) {
+        var v = Math.round(n * 10) / 10;
+        return (v % 1 === 0) ? String(v) : v.toFixed(1);
+      }
+      function fmtMoney(n) {
+        return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+      function pad2(n) { return (n < 10 ? "0" : "") + n; }
+      function fmtClock(totalSec) {
+        var h = Math.floor(totalSec / 3600);
+        var m = Math.floor((totalSec % 3600) / 60);
+        var s = totalSec % 60;
+        return h + ":" + pad2(m) + ":" + pad2(s);
+      }
+      function fmtDateTime(iso) {
+        var d = new Date(iso);
+        return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) + ", " +
+               d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+      }
+      function fmtTime(iso) {
+        return new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+      }
+      function monthKey(iso) {
+        var d = new Date(iso);
+        return d.getFullYear() + "-" + pad2(d.getMonth() + 1);
+      }
+      function monthLabel(key) {
+        var parts = key.split("-");
+        var d = new Date(Number(parts[0]), Number(parts[1]) - 1, 1);
+        return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+      }
+      function durationMinutes(t) {
+        if (t.end) {
+          var diff = (new Date(t.end).getTime() - new Date(t.start).getTime()) / 60000;
+          if (diff > 0) return Math.round(diff);
+        }
+        if (typeof t.durationMin === "number" && t.durationMin > 0) return Math.round(t.durationMin);
+        return 0;
+      }
+      function totalMiles() {
+        return trips.reduce(function (sum, t) { return sum + (Number(t.miles) || 0); }, 0);
+      }
+
+      /* ---------- Warning banner ---------- */
+      if (!meta.warned) { $("warnBanner").hidden = false; }
+      $("warnDismiss").addEventListener("click", function () {
+        meta.warned = true; saveJSON(LS_KEYS.meta, meta);
+        $("warnBanner").hidden = true;
+      });
+
+      /* ---------- Export reminder ---------- */
+      function refreshExportBanner() {
+        var show = meta.sinceExport >= 5 && meta.bannerDismissedAt !== meta.sinceExport;
+        $("exportBanner").hidden = !show;
+        if (show) {
+          $("exportBannerText").textContent =
+            "You've logged " + meta.sinceExport + " trips since your last export. Download a CSV copy so your records are safe if anything happens to this phone's browser data.";
+        }
+      }
+      $("exportDismiss").addEventListener("click", function () {
+        meta.bannerDismissedAt = meta.sinceExport; saveJSON(LS_KEYS.meta, meta);
+        refreshExportBanner();
+        }
+      });
+      $("exportBannerBtn").addEventListener("click", exportCSV);
+
+      /* ---------- Drive timer ---------- */
+      function renderDriveState() {
+        if (currentTrip && currentTrip.start) {
+          $("idleState").hidden = true;
+          $("drivingState").hidden = false;
+          $("startedMeta").textContent = "Started " + fmtDateTime(currentTrip.start);
+          tickTimer();
+        } else {
+          $("idleState").hidden = false;
+          $("drivingState").hidden = true;
+        }
+      }
+      function tickTimer() {
+        if (!currentTrip) return;
+        var elapsed = Math.max(0, Math.floor((Date.now() - new Date(currentTrip.start).getTime()) / 1000));
+        $("timerDisplay").textContent = fmtClock(elapsed);
+      }
+      function startTicking() {
+        stopTicking();
+        timerId = setInterval(tickTimer, 1000);
+        tickTimer();
+      }
+      function stopTicking() { if (timerId) { clearInterval(timerId); timerId = null; } }
+
+      $("startBtn").addEventListener("click", function () {
+        currentTrip = { start: new Date().toISOString() };
+        saveJSON(LS_KEYS.current, currentTrip);
+        renderDriveState(); startTicking();
+      });
+      $("endBtn").addEventListener("click", function () {
+        if (!currentTrip) return;
+        openTripModal("finish", null);
+      });
+
+      document.addEventListener("visibilitychange", function () {
+        if (!document.hidden && currentTrip) tickTimer();
+      });
+
+      /* ---------- Modal / trip form ---------- */
+      var modalMode = "finish"; // "finish" | "add" | "edit"
+      var editingId = null;
+      var entryMethod = "miles";
+
+      function setEntryMethod(method) {
+        entryMethod = method;
+        $("segMiles").setAttribute("aria-pressed", method === "miles" ? "true" : "false");
+        $("segOdo").setAttribute("aria-pressed", method === "odo" ? "true" : "false");
+        $("milesField").hidden = method !== "miles";
+        $("odoFields").hidden = method !== "odo";
+        updateOdoComputed();
+      }
+      $("segMiles").addEventListener("click", function () { setEntryMethod("miles"); });
+      $("segOdo").addEventListener("click", function () { setEntryMethod("odo"); });
+      $("fStartOdo").addEventListener("input", updateOdoComputed);
+      $("fEndOdo").addEventListener("input", updateOdoComputed);
+
+      function updateOdoComputed() {
+        var s = parseFloat($("fStartOdo").value);
+        var e = parseFloat($("fEndOdo").value);
+        var el = $("odoComputed");
+        if (!isNaN(s) && !isNaN(e) && e >= s) {
+          el.innerHTML = "That's <strong>" + fmtMiles(e - s) + " miles</strong> for this trip.";
+        } else if (!isNaN(s) && !isNaN(e) && e < s) {
+          el.textContent = "Ending odometer is lower than the starting one — check the numbers.";
+        } else {
+          el.textContent = "";
+        }
+      }
+
+      function openModal() { $("modalBackdrop").classList.add("open"); }
+      function closeModal() { $("modalBackdrop").classList.remove("open"); }
+
+      function openTripModal(mode, trip) {
+        modalMode = mode;
+        editingId = trip ? trip.id : null;
+        $("formError").textContent = "";
+        $("tripForm").reset();
+
+        if (mode === "finish") {
+          $("modalTitle").textContent = "Finish drive";
+          var mins = currentTrip ? Math.max(1, Math.round((Date.now() - new Date(currentTrip.start).getTime()) / 60000)) : 0;
+          $("modalSub").textContent = "Started " + (currentTrip ? fmtTime(currentTrip.start) : "") + " · about " + mins + " min on the road";
+          $("dateTimeFields").hidden = true;
+          $("discardRow").hidden = false;
+          setEntryMethod("miles");
+        } else if (mode === "add") {
+          $("modalTitle").textContent = "Add a trip";
+          $("modalSub").textContent = "Log a drive you already took.";
+          $("dateTimeFields").hidden = false;
+          $("discardRow").hidden = true;
+          var now = new Date();
+          $("fDate").value = now.getFullYear() + "-" + pad2(now.getMonth() + 1) + "-" + pad2(now.getDate());
+          $("fTime").value = pad2(now.getHours()) + ":" + pad2(now.getMinutes());
+          setEntryMethod("miles");
+        } else if (mode === "edit" && trip) {
+          $("modalTitle").textContent = "Edit trip";
+          $("modalSub").textContent = fmtDateTime(trip.start);
+          $("dateTimeFields").hidden = false;
+          $("discardRow").hidden = true;
+          var d = new Date(trip.start);
+          $("fDate").value = d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+          $("fTime").value = pad2(d.getHours()) + ":" + pad2(d.getMinutes());
+          var dur = durationMinutes(trip);
+          if (dur) $("fDuration").value = dur;
+          $("fPurpose").value = trip.purpose || "";
+          if (trip.startOdo != null && trip.endOdo != null) {
+            setEntryMethod("odo");
+            $("fStartOdo").value = trip.startOdo;
+            $("fEndOdo").value = trip.endOdo;
+          } else {
+            setEntryMethod("miles");
+            $("fMiles").value = trip.miles;
+          }
+        }
+        refreshPurposeList();
+        openModal();
+        setTimeout(function () {
+          var target = entryMethod === "miles" ? $("fMiles") : $("fStartOdo");
+          if (target) target.focus();
+        }, 60);
+      }
+
+      function refreshPurposeList() {
+        var seen = {};
+        var list = $("purposeList");
+        list.innerHTML = "";
+        trips.slice().sort(function (a, b) { return a.start < b.start ? 1 : -1; }).forEach(function (t) {
+          var p = (t.purpose || "").trim();
+          if (p && !seen[p.toLowerCase()]) {
+            seen[p.toLowerCase()] = true;
+            var opt = document.createElement("option");
+            opt.value = p;
+            list.appendChild(opt);
+          }
+        });
+      }
+
+      $("cancelBtn").addEventListener("click", closeModal);
+      $("modalBackdrop").addEventListener("click", function (e) {
+        if (e.target === $("modalBackdrop")) closeModal();
+      });
+      $("discardBtn").addEventListener("click", function () {
+        currentTrip = null;
+        try { localStorage.removeItem(LS_KEYS.current); } catch (e) {}
+        stopTicking(); renderDriveState(); closeModal();
+      });
+      $("addTripBtn").addEventListener("click", function () { openTripModal("add", null); });
+
+      $("tripForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var err = $("formError");
+
+        var miles, startOdo = null, endOdo = null;
+        if (entryMethod === "miles") {
+          miles = parseFloat($("fMiles").value);
+          if (isNaN(miles) || miles <= 0) { err.textContent = "Enter the miles you drove (a number above 0)."; return; }
+        } else {
+          startOdo = parseFloat($("fStartOdo").value);
+          endOdo = parseFloat($("fEndOdo").value);
+          if (isNaN(startOdo) || isNaN(endOdo)) { err.textContent = "Enter both the starting and ending odometer readings."; return; }
+          miles = Math.round((endOdo - startOdo) * 10) / 10;
+          if (miles <= 0) { err.textContent = "Ending odometer must be higher than the starting one."; return; }
+        }
+        miles = Math.round(miles * 10) / 10;
+        var purpose = $("fPurpose").value.trim();
+
+        var record;
+        if (modalMode === "finish") {
+          var end = new Date();
+          record = {
+            id: uid(),
+            start: currentTrip.start,
+            end: end.toISOString(),
+            durationMin: Math.max(1, Math.round((end.getTime() - new Date(currentTrip.start).getTime()) / 60000)),
+            miles: miles, purpose: purpose, startOdo: startOdo, endOdo: endOdo
+          };
+          trips.push(record);
+          currentTrip = null;
+          try { localStorage.removeItem(LS_KEYS.current); } catch (e2) {}
+          stopTicking();
+          meta.sinceExport += 1;
+        } else {
+          var dateVal = $("fDate").value;
+          var timeVal = $("fTime").value || "12:00";
+          if (!dateVal) { err.textContent = "Pick the date of the drive."; return; }
+          var startDate = new Date(dateVal + "T" + timeVal + ":00");
+          if (isNaN(startDate.getTime())) { err.textContent = "That date/time doesn't look right."; return; }
+          var durVal = parseInt($("fDuration").value, 10);
+          var durMin = (!isNaN(durVal) && durVal > 0) ? durVal : null;
+          var endIso = durMin ? new Date(startDate.getTime() + durMin * 60000).toISOString() : null;
+
+          if (modalMode === "add") {
+            record = {
+              id: uid(), start: startDate.toISOString(), end: endIso,
+              durationMin: durMin, miles: miles, purpose: purpose,
+              startOdo: startOdo, endOdo: endOdo
+            };
+            trips.push(record);
+            meta.sinceExport += 1;
+          } else {
+            for (var i = 0; i < trips.length; i++) {
+              if (trips[i].id === editingId) {
+                trips[i].start = startDate.toISOString();
+                trips[i].end = endIso;
+                trips[i].durationMin = durMin;
+                trips[i].miles = miles;
+                trips[i].purpose = purpose;
+                trips[i].startOdo = startOdo;
+                trips[i].endOdo = endOdo;
+                break;
+              }
+            }
+          }
+        }
+
+        saveJSON(LS_KEYS.trips, trips);
+        saveJSON(LS_KEYS.meta, meta);
+        closeModal();
+        renderAll();
+      });
+
+      /* ---------- Delete confirm ---------- */
+      var pendingDeleteId = null;
+      function askDelete(trip) {
+        pendingDeleteId = trip.id;
+        $("confirmText").textContent =
+          fmtDateTime(trip.start) + " · " + fmtMiles(trip.miles) + " mi" +
+          (trip.purpose ? " · " + trip.purpose : "") + ". This can't be undone.";
+        $("confirmBackdrop").classList.add("open");
+      }
+      $("confirmCancel").addEventListener("click", function () {
+        pendingDeleteId = null;
+        $("confirmBackdrop").classList.remove("open");
+      });
+      $("confirmBackdrop").addEventListener("click", function (e) {
+        if (e.target === $("confirmBackdrop")) {
+          pendingDeleteId = null;
+          $("confirmBackdrop").classList.remove("open");
+        }
+      });
+      $("confirmDelete").addEventListener("click", function () {
+        if (pendingDeleteId) {
+          trips = trips.filter(function (t) { return t.id !== pendingDeleteId; });
+          saveJSON(LS_KEYS.trips, trips);
+          pendingDeleteId = null;
+        }
+        $("confirmBackdrop").classList.remove("open");
+        renderAll();
+      });
+
+      /* ---------- Rendering ---------- */
+      function renderStats() {
+        var tm = totalMiles();
+        $("statMiles").textContent = fmtMiles(tm);
+        $("statTrips").textContent = String(trips.length);
+        $("statValue").textContent = fmtMoney(tm * settings.rate);
+        $("deductibleLine").innerHTML =
+          "So far: <strong>" + fmtMiles(tm) + " miles</strong> × " + fmtMoney(settings.rate) +
+          "/mi = <strong>" + fmtMoney(tm * settings.rate) + "</strong> estimated deductible value.";
+        $("vehicleLine").hidden = !settings.vehicle;
+        $("vehicleLine").textContent = settings.vehicle ? settings.vehicle : "";
+      }
+
+      function renderLog() {
+        var log = $("tripLog");
+        log.innerHTML = "";
+        if (!trips.length) {
+          var empty = document.createElement("div");
+          empty.className = "empty-state card";
+          empty.innerHTML = "<strong>No trips logged yet</strong>Tap “Start drive” when you head out, or “Add a trip” to log one you already took.";
+          log.appendChild(empty);
+          return;
+        }
+        var sorted = trips.slice().sort(function (a, b) { return a.start < b.start ? 1 : -1; });
+        var groups = {};
+        var order = [];
+        sorted.forEach(function (t) {
+          var k = monthKey(t.start);
+          if (!groups[k]) { groups[k] = []; order.push(k); }
+          groups[k].push(t);
+        });
+        order.forEach(function (k) {
+          var list = groups[k];
+          var mMiles = list.reduce(function (s, t) { return s + (Number(t.miles) || 0); }, 0);
+          var head = document.createElement("div");
+          head.className = "month-head";
+          var h = document.createElement("h3");
+          h.textContent = monthLabel(k);
+          var tot = document.createElement("span");
+          tot.className = "m-total";
+          tot.textContent = fmtMiles(mMiles) + " mi · " + fmtMoney(mMiles * settings.rate);
+          head.appendChild(h); head.appendChild(tot);
+          log.appendChild(head);
+
+          list.forEach(function (t) {
+            var card = document.createElement("div");
+            card.className = "trip";
+
+            var top = document.createElement("div");
+            top.className = "trip-top";
+            var milesEl = document.createElement("span");
+            milesEl.className = "trip-miles";
+            milesEl.textContent = fmtMiles(t.miles) + " mi";
+            var val = document.createElement("span");
+            val.className = "val";
+            val.textContent = fmtMoney((Number(t.miles) || 0) * settings.rate);
+            milesEl.appendChild(val);
+            var dateEl = document.createElement("span");
+            dateEl.className = "trip-date";
+            dateEl.textContent = fmtDateTime(t.start);
+            top.appendChild(milesEl); top.appendChild(dateEl);
+            card.appendChild(top);
+
+            var purposeEl = document.createElement("p");
+            purposeEl.className = "trip-purpose" + (t.purpose ? "" : " empty");
+            purposeEl.textContent = t.purpose || "No purpose noted";
+            card.appendChild(purposeEl);
+
+            var bits = [];
+            var dur = durationMinutes(t);
+            if (dur) bits.push(dur + " min drive");
+            if (t.end) bits.push("ended " + fmtTime(t.end));
+            if (t.startOdo != null && t.endOdo != null) bits.push("odometer " + t.startOdo + " → " + t.endOdo);
+            if (bits.length) {
+              var sub = document.createElement("p");
+              sub.className = "trip-sub";
+              sub.textContent = bits.join(" · ");
+              card.appendChild(sub);
+            }
+
+            var actions = document.createElement("div");
+            actions.className = "trip-actions";
+            var editBtn = document.createElement("button");
+            editBtn.type = "button";
+            editBtn.textContent = "Edit";
+            editBtn.addEventListener("click", function () { openTripModal("edit", t); });
+            var delBtn = document.createElement("button");
+            delBtn.type = "button";
+            delBtn.className = "del";
+            delBtn.textContent = "Delete";
+            delBtn.addEventListener("click", function () { askDelete(t); });
+            actions.appendChild(editBtn); actions.appendChild(delBtn);
+            card.appendChild(actions);
+
+            log.appendChild(card);
+          });
+        });
+      }
+
+      function renderAll() {
+        renderDriveState();
+        renderStats();
+        renderLog();
+        refreshExportBanner();
+      }
+
+      /* ---------- Settings ---------- */
+      $("vehicleInput").value = settings.vehicle;
+      $("rateInput").value = settings.rate;
+      $("settingsForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var rate = parseFloat($("rateInput").value);
+        var msg = $("settingsMsg");
+        if (isNaN(rate) || rate < 0) {
+          msg.style.color = "var(--danger)";
+          msg.textContent = "Enter a rate of 0 or more.";
+          return;
+        }
+        settings.vehicle = $("vehicleInput").value.trim();
+        settings.rate = Math.round(rate * 1000) / 1000;
+        saveJSON(LS_KEYS.settings, settings);
+        msg.style.color = "var(--ok)";
+        msg.textContent = "Settings saved.";
+        renderAll();
+        setTimeout(function () { msg.textContent = ""; }, 2500);
+      });
+
+      /* ---------- CSV export ---------- */
+      function csvCell(v) {
+        var s = v == null ? "" : String(v);
+        if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+        return s;
+      }
+      function exportCSV() {
+        if (!trips.length) {
+          meta.sinceExport = 0;
+          saveJSON(LS_KEYS.meta, meta);
+          refreshExportBanner();
+          return;
+        }
+        var sorted = trips.slice().sort(function (a, b) { return a.start < b.start ? -1 : 1; });
+        var rows = [["Date", "Start time", "End time", "Duration (min)", "Miles", "Purpose",
+                     "Start odometer", "End odometer", "Vehicle", "Rate per mile", "Deductible value"]];
+        sorted.forEach(function (t) {
+          var d = new Date(t.start);
+          rows.push([
+            d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()),
+            fmtTime(t.start),
+            t.end ? fmtTime(t.end) : "",
+            durationMinutes(t) || "",
+            fmtMiles(t.miles),
+            t.purpose || "",
+            t.startOdo != null ? t.startOdo : "",
+            t.endOdo != null ? t.endOdo : "",
+            settings.vehicle || "",
+            settings.rate.toFixed(3),
+            ((Number(t.miles) || 0) * settings.rate).toFixed(2)
+          ]);
+        });
+        var tm = totalMiles();
+        rows.push([]);
+        rows.push(["TOTAL", "", "", "", fmtMiles(tm), trips.length + " trips", "", "", "", "", (tm * settings.rate).toFixed(2)]);
+
+        var csv = rows.map(function (r) { return r.map(csvCell).join(","); }).join("\r\n");
+        var blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+        var now = new Date();
+        var fname = "faithworks-mileage-" + now.getFullYear() + "-" + pad2(now.getMonth() + 1) + "-" + pad2(now.getDate()) + ".csv";
+
+        function markExported() {
+          meta.sinceExport = 0;
+          meta.bannerDismissedAt = 0;
+          saveJSON(LS_KEYS.meta, meta);
+          refreshExportBanner();
+        }
+
+        // iOS Share Sheet (works when downloads are blocked)
+        if (navigator.share) {
+          try {
+            var file = new File([blob], fname, { type: "text/csv" });
+            if (!navigator.canShare || navigator.canShare({ files: [file] })) {
+              navigator.share({ files: [file], title: "Mileage Export" }).then(markExported).catch(function(){});
+              return;
+            }
+          } catch (e) {}
+        }
+        // Fallback: show CSV in a copyable popup
+        var w = window.open("", "_blank");
+        if (w) {
+          w.document.write("<html><head><title>Copy CSV</title><meta name='viewport' content='width=device-width,initial-scale=1'></head><body style='font-family:sans-serif;padding:16px;'>");
+          w.document.write("<h3>Copy your CSV</h3><p>Downloads are blocked here &mdash; long-press to copy:</p>");
+          w.document.write("<textarea rows='20' style='width:100%;font-family:monospace;font-size:11px;'>" + csv.replace(/&/g,"&amp;").replace(/</g,"&lt;") + "</textarea>");
+          w.document.write("
+</div></div>
+<div id="page-hours" class="tab-page"><div class="tab-hours">
+<div class="wrap">
+      <header class="brand">
+        <div class="org">Faithworks Foundation Inc.</div>
+        <h1>Volunteer Hours</h1>
+        <p>Clock in when you start serving, clock out when you finish — every hour is logged right here on this phone.</p>
+      </header>
+
+      <!-- First-launch storage warning -->
+      <div class="banner" id="h-warnBanner" hidden role="alert">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div>
+          <h2>Before you start: your hours live on this phone</h2>
+          <p>This tracker saves shifts in this phone's browser storage — there is no server copy. If you clear your browser data, switch phones, or the browser cleans up storage, <strong>these records will be gone for good</strong>.</p>
+          <p>Protect yourself: tap <strong>Export CSV</strong> regularly and keep the file somewhere safe (email it to yourself or save it to your files). The tracker will remind you after every 5 shifts.</p>
+          <div class="actions">
+            <button class="btn btn-navy btn-small" id="h-warnDismiss" type="button">Got it — don't show again</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Export reminder -->
+      <div class="banner" id="h-exportReminder" hidden role="alert">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <div>
+          <h2>Time for a backup</h2>
+          <p id="h-exportReminderText">You've logged 5 shifts since your last export. Download a CSV now so your hours are safe even if this phone's browser data gets cleared.</p>
+          <div class="actions">
+            <button class="btn btn-navy btn-small" id="h-reminderExport" type="button">Export CSV now</button>
+            <button class="btn btn-ghost btn-small" id="h-reminderDismiss" type="button">Later</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Clock card -->
+      <div class="clock-card" id="h-clockCard">
+        <div class="status-line"><span class="dot" id="h-statusDot"></span><span id="h-statusText">Not clocked in</span></div>
+        <div class="timer" id="h-timerDisplay">00:00:00</div>
+        <div class="timer-sub" id="h-timerSub">Your shift timer will run here.</div>
+
+        <div id="h-clockInForm">
+          <label class="field">
+            <span>Volunteer name</span>
+            <input type="text" id="h-inName" autocomplete="name" placeholder="e.g. Bozhidar Ayala" />
+          </label>
+          <label class="field">
+            <span>Task / activity</span>
+            <input type="text" id="h-inActivity" placeholder="e.g. Clothing drive sorting" />
+          </label>
+          <div class="form-error" id="h-clockError"></div>
+          <button class="big-btn btn-clockin" id="h-clockInBtn" type="button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            Clock In
+          </button>
+        </div>
+
+        <div id="h-clockOutForm" hidden>
+          <div class="active-meta">
+            <div><span class="k">Volunteer:&nbsp;</span><strong id="h-activeName"></strong></div>
+            <div><span class="k">Activity:&nbsp;</span><span id="h-activeActivity"></span></div>
+            <div><span class="k">Started:&nbsp;</span><span id="h-activeStart"></span></div>
+          </div>
+          <button class="big-btn btn-clockout" id="h-clockOutBtn" type="button">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>
+            Clock Out
+          </button>
+        </div>
+      </div>
+
+      <!-- Totals -->
+      <section aria-labelledby="totalsHeading">
+        <div class="section-head">
+          <h2 id="h-totalsHeading">Hours by volunteer</h2>
+          <span class="sub" id="h-totalsSub"></span>
+        </div>
+        <div class="stat-row" style="margin-bottom:12px;">
+          <div class="stat"><div class="num" id="h-statTotalHours">0</div><div class="lbl">Total hours</div></div>
+          <div class="stat"><div class="num" id="h-statMonthHours">0</div><div class="lbl">This month</div></div>
+          <div class="stat"><div class="num" id="h-statShifts">0</div><div class="lbl">Shifts logged</div></div>
+        </div>
+        <div class="totals-list" id="h-totalsList"></div>
+      </section>
+
+      <!-- Log -->
+      <section aria-labelledby="logHeading">
+        <div class="section-head">
+          <h2 id="h-logHeading">Hours log</h2>
+          <span class="sub">Grouped by month</span>
+        </div>
+        <div id="h-logList"></div>
+        <div class="log-actions">
+          <button class="btn btn-navy" id="h-addEntryBtn" type="button">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add past shift
+          </button>
+          <button class="btn btn-gold" id="h-exportBtn" type="button">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export CSV
+          </button>
+        </div>
+      </section>
+
+      <footer>
+        <div class="tip">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          <div><strong>Keep it on your home screen:</strong> open this page in your phone's browser, tap the share / menu button, and choose <strong>“Add to Home Screen.”</strong> It will open like an app — just remember your hours are stored on this phone, so export a CSV backup regularly.</div>
+        </div>
+        <p class="brand-line">Faithworks Foundation Inc. · Be the Light. Be the Hope.</p>
+      </footer>
+    </div>
+
+    <!-- Add / edit sheet -->
+    <div class="overlay" id="h-entryOverlay" role="dialog" aria-modal="true" aria-labelledby="entrySheetTitle">
+      <div class="sheet">
+        <h2 id="h-entrySheetTitle">Add a past shift</h2>
+        <p class="lede">For shifts you forgot to clock in for, or to fix one from the log.</p>
+        <label class="field">
+          <span>Volunteer name</span>
+          <input type="text" id="h-fName" autocomplete="name" placeholder="e.g. Bozhidar Ayala" />
+        </label>
+        <label class="field">
+          <span>Task / activity</span>
+          <input type="text" id="h-fActivity" placeholder="e.g. Thanksgiving dinner prep" />
+        </label>
+        <div class="two-col">
+          <label class="field">
+            <span>Start</span>
+            <input type="datetime-local" id="h-fStart" />
+          </label>
+          <label class="field">
+            <span>End</span>
+            <input type="datetime-local" id="h-fEnd" />
+          </label>
+        </div>
+        <div class="form-error" id="h-entryError"></div>
+        <div class="actions">
+          <button class="btn btn-ghost" id="h-entryCancel" type="button">Cancel</button>
+          <button class="btn btn-gold" id="h-entrySave" type="button">Save shift</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete confirm sheet -->
+    <div class="overlay" id="h-deleteOverlay" role="alertdialog" aria-modal="true" aria-labelledby="deleteTitle">
+      <div class="sheet">
+        <h2 id="h-deleteTitle">Delete this shift?</h2>
+        <p class="lede" id="h-deleteDetail"></p>
+        <div class="actions">
+          <button class="btn btn-ghost" id="h-deleteCancel" type="button">Keep it</button>
+          <button class="btn" id="h-deleteConfirm" type="button" style="background:var(--danger);color:#fff;">Delete shift</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        var LS_SHIFTS = "vht.shifts.v1";
+        var LS_ACTIVE = "vht.active.v1";
+        var LS_BANNER = "vht.bannerDismissed.v1";
+        var LS_NAME = "vht.lastVolunteer.v1";
+        var LS_EXPORT_COUNT = "vht.shiftsAtLastExport.v1";
+        var LS_REMIND_DISMISSED_AT = "vht.reminderDismissedAt.v1";
+        var REMIND_EVERY = 5;
+
+        function load(key, fallback) {
+          try {
+            var raw = localStorage.getItem(key);
+            return raw === null ? fallback : JSON.parse(raw);
+          } catch (e) { return fallback; }
+        }
+        function save(key, value) {
+          try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* storage full/blocked */ }
+        }
+
+        var shifts = load(LS_SHIFTS, []);
+        if (!Array.isArray(shifts)) shifts = [];
+        var active = load(LS_ACTIVE, null);
+
+        var $ = function (id) { return document.getElementById(id); };
+        var timerId = null;
+
+        /* ---------- formatting helpers ---------- */
+        function pad(n) { return (n < 10 ? "0" : "") + n; }
+        function fmtElapsed(ms) {
+          var s = Math.max(0, Math.floor(ms / 1000));
+          var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+          return pad(h) + ":" + pad(m) + ":" + pad(sec);
+        }
+        function fmtHours(ms) {
+          var h = ms / 3600000;
+          return (Math.round(h * 100) / 100).toString();
+        }
+        function fmtDuration(ms) {
+          var totalMin = Math.round(ms / 60000);
+          var h = Math.floor(totalMin / 60), m = totalMin % 60;
+          if (h === 0) return m + "m";
+          if (m === 0) return h + "h";
+          return h + "h " + m + "m";
+        }
+        function fmtDateTime(iso) {
+          var d = new Date(iso);
+          return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) +
+            " · " + d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+        }
+        function fmtTimeRange(shift) {
+          var s = new Date(shift.start), e = new Date(shift.end);
+          var opts = { hour: "numeric", minute: "2-digit" };
+          var sameDay = s.toDateString() === e.toDateString();
+          var datePart = s.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+          if (sameDay) return datePart + " · " + s.toLocaleTimeString(undefined, opts) + " – " + e.toLocaleTimeString(undefined, opts);
+          return datePart + " " + s.toLocaleTimeString(undefined, opts) + " – " +
+            e.toLocaleDateString(undefined, { month: "short", day: "numeric" }) + " " + e.toLocaleTimeString(undefined, opts);
+        }
+        function monthKey(iso) {
+          var d = new Date(iso);
+          return d.getFullYear() + "-" + pad(d.getMonth() + 1);
+        }
+        function monthLabel(key) {
+          var parts = key.split("-");
+          var d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, 1);
+          return d.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+        }
+        function initials(name) {
+          var parts = name.trim().split(/\s+/);
+          var out = parts[0].charAt(0);
+          if (parts.length > 1) out += parts[parts.length - 1].charAt(0);
+          return out.toUpperCase();
+        }
+        function esc(s) {
+          return String(s == null ? "" : s)
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+        }
+        function uid() {
+          return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+        }
+
+        /* ---------- banner ---------- */
+        if (!load(LS_BANNER, false)) $("warnBanner").hidden = false;
+        $("warnDismiss").addEventListener("click", function () {
+          save(LS_BANNER, true);
+          $("warnBanner").hidden = true;
+        });
+
+        /* ---------- clock ---------- */
+        function renderClock() {
+          var dot = $("statusDot"), txt = $("statusText");
+          if (active) {
+            dot.classList.add("live");
+            txt.textContent = "Clocked in";
+            $("clockInForm").hidden = true;
+            $("clockOutForm").hidden = false;
+            $("activeName").textContent = active.name;
+            $("activeActivity").textContent = active.activity;
+            $("activeStart").textContent = fmtDateTime(active.start);
+            tickTimer();
+            if (!timerId) timerId = setInterval(tickTimer, 500);
+          } else {
+            dot.classList.remove("live");
+            txt.textContent = "Not clocked in";
+            $("clockInForm").hidden = false;
+            $("clockOutForm").hidden = true;
+            $("timerDisplay").textContent = "00:00:00";
+            $("timerSub").textContent = "Your shift timer will run here.";
+            if (timerId) { clearInterval(timerId); timerId = null; }
+          }
+        }
+        function tickTimer() {
+          if (!active) return;
+          var ms = Date.now() - new Date(active.start).getTime();
+          $("timerDisplay").textContent = fmtElapsed(ms);
+          $("timerSub").innerHTML = "<strong>" + esc(active.name) + "</strong> · " + esc(active.activity);
+        }
+
+        function showClockError(msg) {
+          var el = $("clockError");
+          el.textContent = msg;
+          el.classList.add("show");
+        }
+
+        $("clockInBtn").addEventListener("click", function () {
+          var name = $("inName").value.trim();
+          var activity = $("inActivity").value.trim();
+          if (!name) { showClockError("Please enter the volunteer's name before clocking in."); $("inName").focus(); return; }
+          if (!activity) { showClockError("Please add a task or activity for this shift."); $("inActivity").focus(); return; }
+          $("clockError").classList.remove("show");
+          active = { name: name, activity: activity, start: new Date().toISOString() };
+          save(LS_ACTIVE, active);
+          save(LS_NAME, name);
+          $("inActivity").value = "";
+          renderClock();
+        });
+
+        $("clockOutBtn").addEventListener("click", function () {
+          if (!active) return;
+          var end = new Date();
+          shifts.push({
+            id: uid(),
+            name: active.name,
+            activity: active.activity,
+            start: active.start,
+            end: end.toISOString()
+          });
+          shifts.sort(function (a, b) { return new Date(b.start) - new Date(a.start); });
+          save(LS_SHIFTS, shifts);
+          active = null;
+          save(LS_ACTIVE, null);
+          renderClock();
+          renderAll();
+        });
+
+        /* ---------- totals + log ---------- */
+        function renderAll() {
+          renderTotals();
+          renderLog();
+          renderReminder();
+        }
+
+        function renderTotals() {
+          var now = new Date();
+          var thisMonthKey = now.getFullYear() + "-" + pad(now.getMonth() + 1);
+          var totalMs = 0, monthMs = 0;
+          var byName = {};
+          shifts.forEach(function (s) {
+            var ms = new Date(s.end) - new Date(s.start);
+            if (ms < 0) ms = 0;
+            totalMs += ms;
+            if (monthKey(s.start) === thisMonthKey) monthMs += ms;
+            var key = s.name.trim().toLowerCase();
+            if (!byName[key]) byName[key] = { name: s.name, ms: 0, count: 0, monthMs: 0 };
+            byName[key].ms += ms;
+            byName[key].count += 1;
+            if (monthKey(s.start) === thisMonthKey) byName[key].monthMs += ms;
+          });
+          $("statTotalHours").textContent = fmtHours(totalMs);
+          $("statMonthHours").textContent = fmtHours(monthMs);
+          $("statShifts").textContent = shifts.length;
+
+          var list = $("totalsList");
+          var people = Object.keys(byName).map(function (k) { return byName[k]; })
+            .sort(function (a, b) { return b.ms - a.ms; });
+          $("totalsSub").textContent = people.length ? (people.length + (people.length === 1 ? " volunteer" : " volunteers")) : "";
+          if (!people.length) {
+            list.innerHTML = '<div class="empty">No hours logged yet. Clock in above, or add a past shift from the log below.</div>';
+            return;
+          }
+          list.innerHTML = people.map(function (p) {
+            return '<div class="total-card">' +
+              '<div class="avatar" aria-hidden="true">' + esc(initials(p.name)) + "</div>" +
+              '<div class="who"><div class="name">' + esc(p.name) + "</div>" +
+              '<div class="detail">' + p.count + (p.count === 1 ? " shift" : " shifts") + " · " + fmtHours(p.monthMs) + " hrs this month</div></div>" +
+              '<div class="hrs"><div class="big">' + fmtHours(p.ms) + '</div><div class="small">total hours</div></div>' +
+              "</div>";
+          }).join("");
+        }
+
+        function renderLog() {
+          var container = $("logList");
+          if (!shifts.length) {
+            container.innerHTML = '<div class="empty">Nothing in the log yet — your completed shifts will show up here, grouped by month.</div>';
+            return;
+          }
+          var groups = {};
+          var order = [];
+          shifts.forEach(function (s) {
+            var k = monthKey(s.start);
+            if (!groups[k]) { groups[k] = []; order.push(k); }
+            groups[k].push(s);
+          });
+          order.sort().reverse();
+          container.innerHTML = order.map(function (k) {
+            var items = groups[k];
+            var ms = items.reduce(function (acc, s) {
+              var d = new Date(s.end) - new Date(s.start);
+              return acc + (d > 0 ? d : 0);
+            }, 0);
+            var rows = items.map(function (s) {
+              var d = new Date(s.end) - new Date(s.start);
+              return '<div class="entry">' +
+                '<div class="main">' +
+                  '<div class="act">' + esc(s.activity) + "</div>" +
+                  '<div class="meta"><span class="who-name">' + esc(s.name) + "</span> · " + esc(fmtTimeRange(s)) + "</div>" +
+                "</div>" +
+                '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">' +
+                  '<span class="dur">' + fmtDuration(d > 0 ? d : 0) + "</span>" +
+                  '<span class="row-actions">' +
+                    '<button class="icon-btn" type="button" data-action="edit" data-id="h-' + s.id + '" aria-label="Edit shift">' +
+                      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>' +
+                    "</button>" +
+                    '<button class="icon-btn danger" type="button" data-action="delete" data-id="h-' + s.id + '" aria-label="Delete shift">' +
+                      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
+                    "</button>" +
+                  "</span>" +
+                "</div>" +
+              "</div>";
+            }).join("");
+            return '<div class="month-group"><div class="month-head"><h3>' + esc(monthLabel(k)) + "</h3>" +
+              '<span class="mh-total">' + fmtHours(ms) + " hrs · " + items.length + (items.length === 1 ? " shift" : " shifts") + "</span></div>" +
+              rows + "</div>";
+          }).join("");
+        }
+
+        $("logList").addEventListener("click", function (ev) {
+          var btn = ev.target.closest("button[data-action]");
+          if (!btn) return;
+          var id = btn.getAttribute("data-id");
+          var shift = null;
+          for (var i = 0; i < shifts.length; i++) if (shifts[i].id === id) shift = shifts[i];
+          if (!shift) return;
+          if (btn.getAttribute("data-action") === "edit") openEntryForm(shift);
+          else openDeleteConfirm(shift);
+        });
+
+        /* ---------- add / edit form ---------- */
+        var editingId = null;
+        function toLocalInputValue(iso) {
+          var d = new Date(iso);
+          return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) +
+            "T" + pad(d.getHours()) + ":" + pad(d.getMinutes());
+        }
+        function openEntryForm(shift) {
+          editingId = shift ? shift.id : null;
+          $("entrySheetTitle").textContent = shift ? "Edit shift" : "Add a past shift";
+          $("entryError").classList.remove("show");
+          if (shift) {
+            $("fName").value = shift.name;
+            $("fActivity").value = shift.activity;
+            $("fStart").value = toLocalInputValue(shift.start);
+            $("fEnd").value = toLocalInputValue(shift.end);
+          } else {
+            $("fName").value = load(LS_NAME, "");
+            $("fActivity").value = "";
+            var now = new Date();
+            var hourAgo = new Date(now.getTime() - 3600000);
+            $("fStart").value = toLocalInputValue(hourAgo.toISOString());
+            $("fEnd").value = toLocalInputValue(now.toISOString());
+          }
+          $("entryOverlay").classList.add("open");
+        }
+        function closeEntryForm() { $("entryOverlay").classList.remove("open"); }
+
+        $("addEntryBtn").addEventListener("click", function () { openEntryForm(null); });
+        $("entryCancel").addEventListener("click", closeEntryForm);
+        $("entryOverlay").addEventListener("click", function (ev) {
+          if (ev.target === $("entryOverlay")) closeEntryForm();
+        });
+        $("entrySave").addEventListener("click", function () {
+          var name = $("fName").value.trim();
+          var activity = $("fActivity").value.trim();
+          var startVal = $("fStart").value, endVal = $("fEnd").value;
+          var err = $("entryError");
+          function fail(msg) { err.textContent = msg; err.classList.add("show"); }
+          if (!name) return fail("Please enter the volunteer's name.");
+          if (!activity) return fail("Please add a task or activity.");
+          if (!startVal || !endVal) return fail("Please set both a start and an end time.");
+          var start = new Date(startVal), end = new Date(endVal);
+          if (isNaN(start.getTime()) || isNaN(end.getTime())) return fail("Those times don't look right — please check them.");
+          if (end <= start) return fail("The end time needs to be after the start time.");
+          err.classList.remove("show");
+          if (editingId) {
+            for (var i = 0; i < shifts.length; i++) {
+              if (shifts[i].id === editingId) {
+                shifts[i].name = name; shifts[i].activity = activity;
+                shifts[i].start = start.toISOString(); shifts[i].end = end.toISOString();
+              }
+            }
+          } else {
+            shifts.push({ id: uid(), name: name, activity: activity, start: start.toISOString(), end: end.toISOString() });
+          }
+          shifts.sort(function (a, b) { return new Date(b.start) - new Date(a.start); });
+          save(LS_SHIFTS, shifts);
+          save(LS_NAME, name);
+          closeEntryForm();
+          renderAll();
+        });
+
+        /* ---------- delete ---------- */
+        var deletingId = null;
+        function openDeleteConfirm(shift) {
+          deletingId = shift.id;
+          var d = new Date(shift.end) - new Date(shift.start);
+          $("deleteDetail").textContent = shift.name + " · " + shift.activity + " · " + fmtTimeRange(shift) +
+            " (" + fmtDuration(d > 0 ? d : 0) + "). This can't be undone.";
+          $("deleteOverlay").classList.add("open");
+        }
+        function closeDelete() { $("deleteOverlay").classList.remove("open"); deletingId = null; }
+        $("deleteCancel").addEventListener("click", closeDelete);
+        $("deleteOverlay").addEventListener("click", function (ev) {
+          if (ev.target === $("deleteOverlay")) closeDelete();
+        });
+        $("deleteConfirm").addEventListener("click", function () {
+          shifts = shifts.filter(function (s) { return s.id !== deletingId; });
+          save(LS_SHIFTS, shifts);
+          closeDelete();
+          renderAll();
+        });
+
+        /* ---------- CSV export + reminder ---------- */
+        function csvCell(v) {
+          var s = String(v == null ? "" : v);
+          if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+          return s;
+        }
+        function exportCSV() {
+          var lines = ["Date,Volunteer,Activity,Start,End,Duration (hours)"];
+          var sorted = shifts.slice().sort(function (a, b) { return new Date(a.start) - new Date(b.start); });
+          sorted.forEach(function (s) {
+            var start = new Date(s.start), end = new Date(s.end);
+            var ms = end - start; if (ms < 0) ms = 0;
+            lines.push([
+              start.toLocaleDateString("en-CA"),
+              csvCell(s.name),
+              csvCell(s.activity),
+              start.toLocaleString("en-US", { hour12: false }),
+              end.toLocaleString("en-US", { hour12: false }),
+              fmtHours(ms)
+            ].join(","));
+          });
+          var csvText = lines.join("\r\n");
+          var blob = new Blob(["\ufeff" + csvText], { type: "text/csv;charset=utf-8" });
+          var now = new Date();
+          var fname = "faithworks-volunteer-hours-" + now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate()) + ".csv";
+
+          function markExported() {
+            save(LS_EXPORT_COUNT, shifts.length);
+            renderReminder();
+          }
+
+          // iOS Share Sheet (works when downloads are blocked)
+          if (navigator.share) {
+            try {
+              var file = new File([blob], fname, { type: "text/csv" });
+              if (!navigator.canShare || navigator.canShare({ files: [file] })) {
+                navigator.share({ files: [file], title: "Hours Export" }).then(markExported).catch(function(){});
+                return;
+              }
+            } catch (e) {}
+          }
+          // Fallback: show CSV in a copyable popup
+          var w = window.open("", "_blank");
+          if (w) {
+            w.document.write("<html><head><title>Copy CSV</title><meta name='viewport' content='width=device-width,initial-scale=1'></head><body style='font-family:sans-serif;padding:16px;'>");
+            w.document.write("<h3>Copy your CSV</h3><p>Downloads are blocked here &mdash; long-press to copy:</p>");
+            w.document.write("<textarea rows='20' style='width:100%;font-family:monospace;font-size:11px;'>" + csvText.replace(/&/g,"&amp;").replace(/</g,"&lt;") + "</textarea>");
+            w.document.write("
+</div></div>
+<script>
+function switchTab(which, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('page-' + which).classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+<script>
+(function() {
+
+    (function () {
+      "use strict";
+
+      var LS_KEYS = {
+        trips: "faithworks.mileage.trips.v1",
+        settings: "faithworks.mileage.settings.v1",
+        current: "faithworks.mileage.currentTrip.v1",
+        meta: "faithworks.mileage.meta.v1"
+      };
+
+      function loadJSON(key, fallback) {
+        try {
+          var raw = localStorage.getItem(key);
+          if (!raw) return fallback;
+          var parsed = JSON.parse(raw);
+          return parsed == null ? fallback : parsed;
+        } catch (e) { return fallback; }
+      }
+      function saveJSON(key, value) {
+        try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+      }
+
+      var trips = loadJSON(LS_KEYS.trips, []);
+      if (!Array.isArray(trips)) trips = [];
+      var settings = loadJSON(LS_KEYS.settings, { vehicle: "", rate: 0.14 });
+      if (typeof settings.rate !== "number" || isNaN(settings.rate) || settings.rate < 0) settings.rate = 0.14;
+      if (typeof settings.vehicle !== "string") settings.vehicle = "";
+      var meta = loadJSON(LS_KEYS.meta, { warned: false, sinceExport: 0, bannerDismissedAt: 0 });
+      var currentTrip = loadJSON(LS_KEYS.current, null);
+      var timerId = null;
+
+      function $(id) { return document.getElementById(id); }
+
+      function uid() {
+        return "t" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      }
+      function fmtMiles(n) {
+        var v = Math.round(n * 10) / 10;
+        return (v % 1 === 0) ? String(v) : v.toFixed(1);
+      }
+      function fmtMoney(n) {
+        return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+      function pad2(n) { return (n < 10 ? "0" : "") + n; }
+      function fmtClock(totalSec) {
+        var h = Math.floor(totalSec / 3600);
+        var m = Math.floor((totalSec % 3600) / 60);
+        var s = totalSec % 60;
+        return h + ":" + pad2(m) + ":" + pad2(s);
+      }
+      function fmtDateTime(iso) {
+        var d = new Date(iso);
+        return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) + ", " +
+               d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+      }
+      function fmtTime(iso) {
+        return new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+      }
+      function monthKey(iso) {
+        var d = new Date(iso);
+        return d.getFullYear() + "-" + pad2(d.getMonth() + 1);
+      }
+      function monthLabel(key) {
+        var parts = key.split("-");
+        var d = new Date(Number(parts[0]), Number(parts[1]) - 1, 1);
+        return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+      }
+      function durationMinutes(t) {
+        if (t.end) {
+          var diff = (new Date(t.end).getTime() - new Date(t.start).getTime()) / 60000;
+          if (diff > 0) return Math.round(diff);
+        }
+        if (typeof t.durationMin === "number" && t.durationMin > 0) return Math.round(t.durationMin);
+        return 0;
+      }
+      function totalMiles() {
+        return trips.reduce(function (sum, t) { return sum + (Number(t.miles) || 0); }, 0);
+      }
+
+      /* ---------- Warning banner ---------- */
+      if (!meta.warned) { $("m-warnBanner").hidden = false; }
+      $("m-warnDismiss").addEventListener("click", function () {
+        meta.warned = true; saveJSON(LS_KEYS.meta, meta);
+        $("m-warnBanner").hidden = true;
+      });
+
+      /* ---------- Export reminder ---------- */
+      function refreshExportBanner() {
+        var show = meta.sinceExport >= 5 && meta.bannerDismissedAt !== meta.sinceExport;
+        $("m-exportBanner").hidden = !show;
+        if (show) {
+          $("m-exportBannerText").textContent =
+            "You've logged " + meta.sinceExport + " trips since your last export. Download a CSV copy so your records are safe if anything happens to this phone's browser data.";
+        }
+      }
+      $("m-exportDismiss").addEventListener("click", function () {
+        meta.bannerDismissedAt = meta.sinceExport; saveJSON(LS_KEYS.meta, meta);
+        refreshExportBanner();
+        }
+      });
+      $("m-exportBannerBtn").addEventListener("click", exportCSV);
+
+      /* ---------- Drive timer ---------- */
+      function renderDriveState() {
+        if (currentTrip && currentTrip.start) {
+          $("m-idleState").hidden = true;
+          $("m-drivingState").hidden = false;
+          $("m-startedMeta").textContent = "Started " + fmtDateTime(currentTrip.start);
+          tickTimer();
+        } else {
+          $("m-idleState").hidden = false;
+          $("m-drivingState").hidden = true;
+        }
+      }
+      function tickTimer() {
+        if (!currentTrip) return;
+        var elapsed = Math.max(0, Math.floor((Date.now() - new Date(currentTrip.start).getTime()) / 1000));
+        $("m-timerDisplay").textContent = fmtClock(elapsed);
+      }
+      function startTicking() {
+        stopTicking();
+        timerId = setInterval(tickTimer, 1000);
+        tickTimer();
+      }
+      function stopTicking() { if (timerId) { clearInterval(timerId); timerId = null; } }
+
+      $("m-startBtn").addEventListener("click", function () {
+        currentTrip = { start: new Date().toISOString() };
+        saveJSON(LS_KEYS.current, currentTrip);
+        renderDriveState(); startTicking();
+      });
+      $("m-endBtn").addEventListener("click", function () {
+        if (!currentTrip) return;
+        openTripModal("finish", null);
+      });
+
+      document.addEventListener("visibilitychange", function () {
+        if (!document.hidden && currentTrip) tickTimer();
+      });
+
+      /* ---------- Modal / trip form ---------- */
+      var modalMode = "finish"; // "finish" | "add" | "edit"
+      var editingId = null;
+      var entryMethod = "miles";
+
+      function setEntryMethod(method) {
+        entryMethod = method;
+        $("m-segMiles").setAttribute("aria-pressed", method === "miles" ? "true" : "false");
+        $("m-segOdo").setAttribute("aria-pressed", method === "odo" ? "true" : "false");
+        $("m-milesField").hidden = method !== "miles";
+        $("m-odoFields").hidden = method !== "odo";
+        updateOdoComputed();
+      }
+      $("m-segMiles").addEventListener("click", function () { setEntryMethod("miles"); });
+      $("m-segOdo").addEventListener("click", function () { setEntryMethod("odo"); });
+      $("m-fStartOdo").addEventListener("input", updateOdoComputed);
+      $("m-fEndOdo").addEventListener("input", updateOdoComputed);
+
+      function updateOdoComputed() {
+        var s = parseFloat($("m-fStartOdo").value);
+        var e = parseFloat($("m-fEndOdo").value);
+        var el = $("m-odoComputed");
+        if (!isNaN(s) && !isNaN(e) && e >= s) {
+          el.innerHTML = "That's <strong>" + fmtMiles(e - s) + " miles</strong> for this trip.";
+        } else if (!isNaN(s) && !isNaN(e) && e < s) {
+          el.textContent = "Ending odometer is lower than the starting one — check the numbers.";
+        } else {
+          el.textContent = "";
+        }
+      }
+
+      function openModal() { $("m-modalBackdrop").classList.add("open"); }
+      function closeModal() { $("m-modalBackdrop").classList.remove("open"); }
+
+      function openTripModal(mode, trip) {
+        modalMode = mode;
+        editingId = trip ? trip.id : null;
+        $("m-formError").textContent = "";
+        $("m-tripForm").reset();
+
+        if (mode === "finish") {
+          $("m-modalTitle").textContent = "Finish drive";
+          var mins = currentTrip ? Math.max(1, Math.round((Date.now() - new Date(currentTrip.start).getTime()) / 60000)) : 0;
+          $("m-modalSub").textContent = "Started " + (currentTrip ? fmtTime(currentTrip.start) : "") + " · about " + mins + " min on the road";
+          $("m-dateTimeFields").hidden = true;
+          $("m-discardRow").hidden = false;
+          setEntryMethod("miles");
+        } else if (mode === "add") {
+          $("m-modalTitle").textContent = "Add a trip";
+          $("m-modalSub").textContent = "Log a drive you already took.";
+          $("m-dateTimeFields").hidden = false;
+          $("m-discardRow").hidden = true;
+          var now = new Date();
+          $("m-fDate").value = now.getFullYear() + "-" + pad2(now.getMonth() + 1) + "-" + pad2(now.getDate());
+          $("m-fTime").value = pad2(now.getHours()) + ":" + pad2(now.getMinutes());
+          setEntryMethod("miles");
+        } else if (mode === "edit" && trip) {
+          $("m-modalTitle").textContent = "Edit trip";
+          $("m-modalSub").textContent = fmtDateTime(trip.start);
+          $("m-dateTimeFields").hidden = false;
+          $("m-discardRow").hidden = true;
+          var d = new Date(trip.start);
+          $("m-fDate").value = d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+          $("m-fTime").value = pad2(d.getHours()) + ":" + pad2(d.getMinutes());
+          var dur = durationMinutes(trip);
+          if (dur) $("m-fDuration").value = dur;
+          $("m-fPurpose").value = trip.purpose || "";
+          if (trip.startOdo != null && trip.endOdo != null) {
+            setEntryMethod("odo");
+            $("m-fStartOdo").value = trip.startOdo;
+            $("m-fEndOdo").value = trip.endOdo;
+          } else {
+            setEntryMethod("miles");
+            $("m-fMiles").value = trip.miles;
+          }
+        }
+        refreshPurposeList();
+        openModal();
+        setTimeout(function () {
+          var target = entryMethod === "miles" ? $("m-fMiles") : $("m-fStartOdo");
+          if (target) target.focus();
+        }, 60);
+      }
+
+      function refreshPurposeList() {
+        var seen = {};
+        var list = $("m-purposeList");
+        list.innerHTML = "";
+        trips.slice().sort(function (a, b) { return a.start < b.start ? 1 : -1; }).forEach(function (t) {
+          var p = (t.purpose || "").trim();
+          if (p && !seen[p.toLowerCase()]) {
+            seen[p.toLowerCase()] = true;
+            var opt = document.createElement("option");
+            opt.value = p;
+            list.appendChild(opt);
+          }
+        });
+      }
+
+      $("m-cancelBtn").addEventListener("click", closeModal);
+      $("m-modalBackdrop").addEventListener("click", function (e) {
+        if (e.target === $("m-modalBackdrop")) closeModal();
+      });
+      $("m-discardBtn").addEventListener("click", function () {
+        currentTrip = null;
+        try { localStorage.removeItem(LS_KEYS.current); } catch (e) {}
+        stopTicking(); renderDriveState(); closeModal();
+      });
+      $("m-addTripBtn").addEventListener("click", function () { openTripModal("add", null); });
+
+      $("m-tripForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var err = $("m-formError");
+
+        var miles, startOdo = null, endOdo = null;
+        if (entryMethod === "miles") {
+          miles = parseFloat($("m-fMiles").value);
+          if (isNaN(miles) || miles <= 0) { err.textContent = "Enter the miles you drove (a number above 0)."; return; }
+        } else {
+          startOdo = parseFloat($("m-fStartOdo").value);
+          endOdo = parseFloat($("m-fEndOdo").value);
+          if (isNaN(startOdo) || isNaN(endOdo)) { err.textContent = "Enter both the starting and ending odometer readings."; return; }
+          miles = Math.round((endOdo - startOdo) * 10) / 10;
+          if (miles <= 0) { err.textContent = "Ending odometer must be higher than the starting one."; return; }
+        }
+        miles = Math.round(miles * 10) / 10;
+        var purpose = $("m-fPurpose").value.trim();
+
+        var record;
+        if (modalMode === "finish") {
+          var end = new Date();
+          record = {
+            id: uid(),
+            start: currentTrip.start,
+            end: end.toISOString(),
+            durationMin: Math.max(1, Math.round((end.getTime() - new Date(currentTrip.start).getTime()) / 60000)),
+            miles: miles, purpose: purpose, startOdo: startOdo, endOdo: endOdo
+          };
+          trips.push(record);
+          currentTrip = null;
+          try { localStorage.removeItem(LS_KEYS.current); } catch (e2) {}
+          stopTicking();
+          meta.sinceExport += 1;
+        } else {
+          var dateVal = $("m-fDate").value;
+          var timeVal = $("m-fTime").value || "12:00";
+          if (!dateVal) { err.textContent = "Pick the date of the drive."; return; }
+          var startDate = new Date(dateVal + "T" + timeVal + ":00");
+          if (isNaN(startDate.getTime())) { err.textContent = "That date/time doesn't look right."; return; }
+          var durVal = parseInt($("m-fDuration").value, 10);
+          var durMin = (!isNaN(durVal) && durVal > 0) ? durVal : null;
+          var endIso = durMin ? new Date(startDate.getTime() + durMin * 60000).toISOString() : null;
+
+          if (modalMode === "add") {
+            record = {
+              id: uid(), start: startDate.toISOString(), end: endIso,
+              durationMin: durMin, miles: miles, purpose: purpose,
+              startOdo: startOdo, endOdo: endOdo
+            };
+            trips.push(record);
+            meta.sinceExport += 1;
+          } else {
+            for (var i = 0; i < trips.length; i++) {
+              if (trips[i].id === editingId) {
+                trips[i].start = startDate.toISOString();
+                trips[i].end = endIso;
+                trips[i].durationMin = durMin;
+                trips[i].miles = miles;
+                trips[i].purpose = purpose;
+                trips[i].startOdo = startOdo;
+                trips[i].endOdo = endOdo;
+                break;
+              }
+            }
+          }
+        }
+
+        saveJSON(LS_KEYS.trips, trips);
+        saveJSON(LS_KEYS.meta, meta);
+        closeModal();
+        renderAll();
+      });
+
+      /* ---------- Delete confirm ---------- */
+      var pendingDeleteId = null;
+      function askDelete(trip) {
+        pendingDeleteId = trip.id;
+        $("m-confirmText").textContent =
+          fmtDateTime(trip.start) + " · " + fmtMiles(trip.miles) + " mi" +
+          (trip.purpose ? " · " + trip.purpose : "") + ". This can't be undone.";
+        $("m-confirmBackdrop").classList.add("open");
+      }
+      $("m-confirmCancel").addEventListener("click", function () {
+        pendingDeleteId = null;
+        $("m-confirmBackdrop").classList.remove("open");
+      });
+      $("m-confirmBackdrop").addEventListener("click", function (e) {
+        if (e.target === $("m-confirmBackdrop")) {
+          pendingDeleteId = null;
+          $("m-confirmBackdrop").classList.remove("open");
+        }
+      });
+      $("m-confirmDelete").addEventListener("click", function () {
+        if (pendingDeleteId) {
+          trips = trips.filter(function (t) { return t.id !== pendingDeleteId; });
+          saveJSON(LS_KEYS.trips, trips);
+          pendingDeleteId = null;
+        }
+        $("m-confirmBackdrop").classList.remove("open");
+        renderAll();
+      });
+
+      /* ---------- Rendering ---------- */
+      function renderStats() {
+        var tm = totalMiles();
+        $("m-statMiles").textContent = fmtMiles(tm);
+        $("m-statTrips").textContent = String(trips.length);
+        $("m-statValue").textContent = fmtMoney(tm * settings.rate);
+        $("m-deductibleLine").innerHTML =
+          "So far: <strong>" + fmtMiles(tm) + " miles</strong> × " + fmtMoney(settings.rate) +
+          "/mi = <strong>" + fmtMoney(tm * settings.rate) + "</strong> estimated deductible value.";
+        $("m-vehicleLine").hidden = !settings.vehicle;
+        $("m-vehicleLine").textContent = settings.vehicle ? settings.vehicle : "";
+      }
+
+      function renderLog() {
+        var log = $("m-tripLog");
+        log.innerHTML = "";
+        if (!trips.length) {
+          var empty = document.createElement("div");
+          empty.className = "empty-state card";
+          empty.innerHTML = "<strong>No trips logged yet</strong>Tap “Start drive” when you head out, or “Add a trip” to log one you already took.";
+          log.appendChild(empty);
+          return;
+        }
+        var sorted = trips.slice().sort(function (a, b) { return a.start < b.start ? 1 : -1; });
+        var groups = {};
+        var order = [];
+        sorted.forEach(function (t) {
+          var k = monthKey(t.start);
+          if (!groups[k]) { groups[k] = []; order.push(k); }
+          groups[k].push(t);
+        });
+        order.forEach(function (k) {
+          var list = groups[k];
+          var mMiles = list.reduce(function (s, t) { return s + (Number(t.miles) || 0); }, 0);
+          var head = document.createElement("div");
+          head.className = "month-head";
+          var h = document.createElement("h3");
+          h.textContent = monthLabel(k);
+          var tot = document.createElement("span");
+          tot.className = "m-total";
+          tot.textContent = fmtMiles(mMiles) + " mi · " + fmtMoney(mMiles * settings.rate);
+          head.appendChild(h); head.appendChild(tot);
+          log.appendChild(head);
+
+          list.forEach(function (t) {
+            var card = document.createElement("div");
+            card.className = "trip";
+
+            var top = document.createElement("div");
+            top.className = "trip-top";
+            var milesEl = document.createElement("span");
+            milesEl.className = "trip-miles";
+            milesEl.textContent = fmtMiles(t.miles) + " mi";
+            var val = document.createElement("span");
+            val.className = "val";
+            val.textContent = fmtMoney((Number(t.miles) || 0) * settings.rate);
+            milesEl.appendChild(val);
+            var dateEl = document.createElement("span");
+            dateEl.className = "trip-date";
+            dateEl.textContent = fmtDateTime(t.start);
+            top.appendChild(milesEl); top.appendChild(dateEl);
+            card.appendChild(top);
+
+            var purposeEl = document.createElement("p");
+            purposeEl.className = "trip-purpose" + (t.purpose ? "" : " empty");
+            purposeEl.textContent = t.purpose || "No purpose noted";
+            card.appendChild(purposeEl);
+
+            var bits = [];
+            var dur = durationMinutes(t);
+            if (dur) bits.push(dur + " min drive");
+            if (t.end) bits.push("ended " + fmtTime(t.end));
+            if (t.startOdo != null && t.endOdo != null) bits.push("odometer " + t.startOdo + " → " + t.endOdo);
+            if (bits.length) {
+              var sub = document.createElement("p");
+              sub.className = "trip-sub";
+              sub.textContent = bits.join(" · ");
+              card.appendChild(sub);
+            }
+
+            var actions = document.createElement("div");
+            actions.className = "trip-actions";
+            var editBtn = document.createElement("button");
+            editBtn.type = "button";
+            editBtn.textContent = "Edit";
+            editBtn.addEventListener("click", function () { openTripModal("edit", t); });
+            var delBtn = document.createElement("button");
+            delBtn.type = "button";
+            delBtn.className = "del";
+            delBtn.textContent = "Delete";
+            delBtn.addEventListener("click", function () { askDelete(t); });
+            actions.appendChild(editBtn); actions.appendChild(delBtn);
+            card.appendChild(actions);
+
+            log.appendChild(card);
+          });
+        });
+      }
+
+      function renderAll() {
+        renderDriveState();
+        renderStats();
+        renderLog();
+        refreshExportBanner();
+      }
+
+      /* ---------- Settings ---------- */
+      $("m-vehicleInput").value = settings.vehicle;
+      $("m-rateInput").value = settings.rate;
+      $("m-settingsForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var rate = parseFloat($("m-rateInput").value);
+        var msg = $("m-settingsMsg");
+        if (isNaN(rate) || rate < 0) {
+          msg.style.color = "var(--danger)";
+          msg.textContent = "Enter a rate of 0 or more.";
+          return;
+        }
+        settings.vehicle = $("m-vehicleInput").value.trim();
+        settings.rate = Math.round(rate * 1000) / 1000;
+        saveJSON(LS_KEYS.settings, settings);
+        msg.style.color = "var(--ok)";
+        msg.textContent = "Settings saved.";
+        renderAll();
+        setTimeout(function () { msg.textContent = ""; }, 2500);
+      });
+
+      /* ---------- CSV export ---------- */
+      function csvCell(v) {
+        var s = v == null ? "" : String(v);
+        if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+        return s;
+      }
+      function exportCSV() {
+        if (!trips.length) {
+          meta.sinceExport = 0;
+          saveJSON(LS_KEYS.meta, meta);
+          refreshExportBanner();
+          return;
+        }
+        var sorted = trips.slice().sort(function (a, b) { return a.start < b.start ? -1 : 1; });
+        var rows = [["Date", "Start time", "End time", "Duration (min)", "Miles", "Purpose",
+                     "Start odometer", "End odometer", "Vehicle", "Rate per mile", "Deductible value"]];
+        sorted.forEach(function (t) {
+          var d = new Date(t.start);
+          rows.push([
+            d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()),
+            fmtTime(t.start),
+            t.end ? fmtTime(t.end) : "",
+            durationMinutes(t) || "",
+            fmtMiles(t.miles),
+            t.purpose || "",
+            t.startOdo != null ? t.startOdo : "",
+            t.endOdo != null ? t.endOdo : "",
+            settings.vehicle || "",
+            settings.rate.toFixed(3),
+            ((Number(t.miles) || 0) * settings.rate).toFixed(2)
+          ]);
+        });
+        var tm = totalMiles();
+        rows.push([]);
+        rows.push(["TOTAL", "", "", "", fmtMiles(tm), trips.length + " trips", "", "", "", "", (tm * settings.rate).toFixed(2)]);
+
+        var csv = rows.map(function (r) { return r.map(csvCell).join(","); }).join("\r\n");
+        var blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+        var now = new Date();
+        var fname = "faithworks-mileage-" + now.getFullYear() + "-" + pad2(now.getMonth() + 1) + "-" + pad2(now.getDate()) + ".csv";
+
+        function markExported() {
+          meta.sinceExport = 0;
+          meta.bannerDismissedAt = 0;
+          saveJSON(LS_KEYS.meta, meta);
+          refreshExportBanner();
+        }
+
+        // iOS Share Sheet (works when downloads are blocked)
+        if (navigator.share) {
+          try {
+            var file = new File([blob], fname, { type: "text/csv" });
+            if (!navigator.canShare || navigator.canShare({ files: [file] })) {
+              navigator.share({ files: [file], title: "Mileage Export" }).then(markExported).catch(function(){});
+              return;
+            }
+          } catch (e) {}
+        }
+        // Fallback: show CSV in a copyable popup
+        var w = window.open("", "_blank");
+        if (w) {
+          w.document.write("<html><head><title>Copy CSV</title><meta name='viewport' content='width=device-width,initial-scale=1'></head><body style='font-family:sans-serif;padding:16px;'>");
+          w.document.write("<h3>Copy your CSV</h3><p>Downloads are blocked here &mdash; long-press to copy:</p>");
+          w.document.write("<textarea rows='20' style='width:100%;font-family:monospace;font-size:11px;'>" + csv.replace(/&/g,"&amp;").replace(/</g,"&lt;") + "</textarea>");
+          w.document.write("</body></html>");
+          w.document.close();
+          markExported();
+          return;
+        }
+        // Last resort: regular download
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = fname;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+        markExported();
+      })();
+    
+})();
+</script>
+<script>
+(function() {
+
+      (function () {
+        "use strict";
+
+        var LS_SHIFTS = "vht.shifts.v1";
+        var LS_ACTIVE = "vht.active.v1";
+        var LS_BANNER = "vht.bannerDismissed.v1";
+        var LS_NAME = "vht.lastVolunteer.v1";
+        var LS_EXPORT_COUNT = "vht.shiftsAtLastExport.v1";
+        var LS_REMIND_DISMISSED_AT = "vht.reminderDismissedAt.v1";
+        var REMIND_EVERY = 5;
+
+        function load(key, fallback) {
+          try {
+            var raw = localStorage.getItem(key);
+            return raw === null ? fallback : JSON.parse(raw);
+          } catch (e) { return fallback; }
+        }
+        function save(key, value) {
+          try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* storage full/blocked */ }
+        }
+
+        var shifts = load(LS_SHIFTS, []);
+        if (!Array.isArray(shifts)) shifts = [];
+        var active = load(LS_ACTIVE, null);
+
+        var $ = function (id) { return document.getElementById(id); };
+        var timerId = null;
+
+        /* ---------- formatting helpers ---------- */
+        function pad(n) { return (n < 10 ? "0" : "") + n; }
+        function fmtElapsed(ms) {
+          var s = Math.max(0, Math.floor(ms / 1000));
+          var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+          return pad(h) + ":" + pad(m) + ":" + pad(sec);
+        }
+        function fmtHours(ms) {
+          var h = ms / 3600000;
+          return (Math.round(h * 100) / 100).toString();
+        }
+        function fmtDuration(ms) {
+          var totalMin = Math.round(ms / 60000);
+          var h = Math.floor(totalMin / 60), m = totalMin % 60;
+          if (h === 0) return m + "m";
+          if (m === 0) return h + "h";
+          return h + "h " + m + "m";
+        }
+        function fmtDateTime(iso) {
+          var d = new Date(iso);
+          return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) +
+            " · " + d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+        }
+        function fmtTimeRange(shift) {
+          var s = new Date(shift.start), e = new Date(shift.end);
+          var opts = { hour: "numeric", minute: "2-digit" };
+          var sameDay = s.toDateString() === e.toDateString();
+          var datePart = s.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+          if (sameDay) return datePart + " · " + s.toLocaleTimeString(undefined, opts) + " – " + e.toLocaleTimeString(undefined, opts);
+          return datePart + " " + s.toLocaleTimeString(undefined, opts) + " – " +
+            e.toLocaleDateString(undefined, { month: "short", day: "numeric" }) + " " + e.toLocaleTimeString(undefined, opts);
+        }
+        function monthKey(iso) {
+          var d = new Date(iso);
+          return d.getFullYear() + "-" + pad(d.getMonth() + 1);
+        }
+        function monthLabel(key) {
+          var parts = key.split("-");
+          var d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, 1);
+          return d.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+        }
+        function initials(name) {
+          var parts = name.trim().split(/\s+/);
+          var out = parts[0].charAt(0);
+          if (parts.length > 1) out += parts[parts.length - 1].charAt(0);
+          return out.toUpperCase();
+        }
+        function esc(s) {
+          return String(s == null ? "" : s)
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+        }
+        function uid() {
+          return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+        }
+
+        /* ---------- banner ---------- */
+        if (!load(LS_BANNER, false)) $("h-warnBanner").hidden = false;
+        $("h-warnDismiss").addEventListener("click", function () {
+          save(LS_BANNER, true);
+          $("h-warnBanner").hidden = true;
+        });
+
+        /* ---------- clock ---------- */
+        function renderClock() {
+          var dot = $("h-statusDot"), txt = $("h-statusText");
+          if (active) {
+            dot.classList.add("live");
+            txt.textContent = "Clocked in";
+            $("h-clockInForm").hidden = true;
+            $("h-clockOutForm").hidden = false;
+            $("h-activeName").textContent = active.name;
+            $("h-activeActivity").textContent = active.activity;
+            $("h-activeStart").textContent = fmtDateTime(active.start);
+            tickTimer();
+            if (!timerId) timerId = setInterval(tickTimer, 500);
+          } else {
+            dot.classList.remove("live");
+            txt.textContent = "Not clocked in";
+            $("h-clockInForm").hidden = false;
+            $("h-clockOutForm").hidden = true;
+            $("h-timerDisplay").textContent = "00:00:00";
+            $("h-timerSub").textContent = "Your shift timer will run here.";
+            if (timerId) { clearInterval(timerId); timerId = null; }
+          }
+        }
+        function tickTimer() {
+          if (!active) return;
+          var ms = Date.now() - new Date(active.start).getTime();
+          $("h-timerDisplay").textContent = fmtElapsed(ms);
+          $("h-timerSub").innerHTML = "<strong>" + esc(active.name) + "</strong> · " + esc(active.activity);
+        }
+
+        function showClockError(msg) {
+          var el = $("h-clockError");
+          el.textContent = msg;
+          el.classList.add("show");
+        }
+
+        $("h-clockInBtn").addEventListener("click", function () {
+          var name = $("h-inName").value.trim();
+          var activity = $("h-inActivity").value.trim();
+          if (!name) { showClockError("Please enter the volunteer's name before clocking in."); $("h-inName").focus(); return; }
+          if (!activity) { showClockError("Please add a task or activity for this shift."); $("h-inActivity").focus(); return; }
+          $("h-clockError").classList.remove("show");
+          active = { name: name, activity: activity, start: new Date().toISOString() };
+          save(LS_ACTIVE, active);
+          save(LS_NAME, name);
+          $("h-inActivity").value = "";
+          renderClock();
+        });
+
+        $("h-clockOutBtn").addEventListener("click", function () {
+          if (!active) return;
+          var end = new Date();
+          shifts.push({
+            id: uid(),
+            name: active.name,
+            activity: active.activity,
+            start: active.start,
+            end: end.toISOString()
+          });
+          shifts.sort(function (a, b) { return new Date(b.start) - new Date(a.start); });
+          save(LS_SHIFTS, shifts);
+          active = null;
+          save(LS_ACTIVE, null);
+          renderClock();
+          renderAll();
+        });
+
+        /* ---------- totals + log ---------- */
+        function renderAll() {
+          renderTotals();
+          renderLog();
+          renderReminder();
+        }
+
+        function renderTotals() {
+          var now = new Date();
+          var thisMonthKey = now.getFullYear() + "-" + pad(now.getMonth() + 1);
+          var totalMs = 0, monthMs = 0;
+          var byName = {};
+          shifts.forEach(function (s) {
+            var ms = new Date(s.end) - new Date(s.start);
+            if (ms < 0) ms = 0;
+            totalMs += ms;
+            if (monthKey(s.start) === thisMonthKey) monthMs += ms;
+            var key = s.name.trim().toLowerCase();
+            if (!byName[key]) byName[key] = { name: s.name, ms: 0, count: 0, monthMs: 0 };
+            byName[key].ms += ms;
+            byName[key].count += 1;
+            if (monthKey(s.start) === thisMonthKey) byName[key].monthMs += ms;
+          });
+          $("h-statTotalHours").textContent = fmtHours(totalMs);
+          $("h-statMonthHours").textContent = fmtHours(monthMs);
+          $("h-statShifts").textContent = shifts.length;
+
+          var list = $("h-totalsList");
+          var people = Object.keys(byName).map(function (k) { return byName[k]; })
+            .sort(function (a, b) { return b.ms - a.ms; });
+          $("h-totalsSub").textContent = people.length ? (people.length + (people.length === 1 ? " volunteer" : " volunteers")) : "";
+          if (!people.length) {
+            list.innerHTML = '<div class="empty">No hours logged yet. Clock in above, or add a past shift from the log below.</div>';
+            return;
+          }
+          list.innerHTML = people.map(function (p) {
+            return '<div class="total-card">' +
+              '<div class="avatar" aria-hidden="true">' + esc(initials(p.name)) + "</div>" +
+              '<div class="who"><div class="name">' + esc(p.name) + "</div>" +
+              '<div class="detail">' + p.count + (p.count === 1 ? " shift" : " shifts") + " · " + fmtHours(p.monthMs) + " hrs this month</div></div>" +
+              '<div class="hrs"><div class="big">' + fmtHours(p.ms) + '</div><div class="small">total hours</div></div>' +
+              "</div>";
+          }).join("");
+        }
+
+        function renderLog() {
+          var container = $("h-logList");
+          if (!shifts.length) {
+            container.innerHTML = '<div class="empty">Nothing in the log yet — your completed shifts will show up here, grouped by month.</div>';
+            return;
+          }
+          var groups = {};
+          var order = [];
+          shifts.forEach(function (s) {
+            var k = monthKey(s.start);
+            if (!groups[k]) { groups[k] = []; order.push(k); }
+            groups[k].push(s);
+          });
+          order.sort().reverse();
+          container.innerHTML = order.map(function (k) {
+            var items = groups[k];
+            var ms = items.reduce(function (acc, s) {
+              var d = new Date(s.end) - new Date(s.start);
+              return acc + (d > 0 ? d : 0);
+            }, 0);
+            var rows = items.map(function (s) {
+              var d = new Date(s.end) - new Date(s.start);
+              return '<div class="entry">' +
+                '<div class="main">' +
+                  '<div class="act">' + esc(s.activity) + "</div>" +
+                  '<div class="meta"><span class="who-name">' + esc(s.name) + "</span> · " + esc(fmtTimeRange(s)) + "</div>" +
+                "</div>" +
+                '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">' +
+                  '<span class="dur">' + fmtDuration(d > 0 ? d : 0) + "</span>" +
+                  '<span class="row-actions">' +
+                    '<button class="icon-btn" type="button" data-action="edit" data-id="' + s.id + '" aria-label="Edit shift">' +
+                      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>' +
+                    "</button>" +
+                    '<button class="icon-btn danger" type="button" data-action="delete" data-id="' + s.id + '" aria-label="Delete shift">' +
+                      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
+                    "</button>" +
+                  "</span>" +
+                "</div>" +
+              "</div>";
+            }).join("");
+            return '<div class="month-group"><div class="month-head"><h3>' + esc(monthLabel(k)) + "</h3>" +
+              '<span class="mh-total">' + fmtHours(ms) + " hrs · " + items.length + (items.length === 1 ? " shift" : " shifts") + "</span></div>" +
+              rows + "</div>";
+          }).join("");
+        }
+
+        $("h-logList").addEventListener("click", function (ev) {
+          var btn = ev.target.closest("button[data-action]");
+          if (!btn) return;
+          var id = btn.getAttribute("data-id");
+          var shift = null;
+          for (var i = 0; i < shifts.length; i++) if (shifts[i].id === id) shift = shifts[i];
+          if (!shift) return;
+          if (btn.getAttribute("data-action") === "edit") openEntryForm(shift);
+          else openDeleteConfirm(shift);
+        });
+
+        /* ---------- add / edit form ---------- */
+        var editingId = null;
+        function toLocalInputValue(iso) {
+          var d = new Date(iso);
+          return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) +
+            "T" + pad(d.getHours()) + ":" + pad(d.getMinutes());
+        }
+        function openEntryForm(shift) {
+          editingId = shift ? shift.id : null;
+          $("h-entrySheetTitle").textContent = shift ? "Edit shift" : "Add a past shift";
+          $("h-entryError").classList.remove("show");
+          if (shift) {
+            $("h-fName").value = shift.name;
+            $("h-fActivity").value = shift.activity;
+            $("h-fStart").value = toLocalInputValue(shift.start);
+            $("h-fEnd").value = toLocalInputValue(shift.end);
+          } else {
+            $("h-fName").value = load(LS_NAME, "");
+            $("h-fActivity").value = "";
+            var now = new Date();
+            var hourAgo = new Date(now.getTime() - 3600000);
+            $("h-fStart").value = toLocalInputValue(hourAgo.toISOString());
+            $("h-fEnd").value = toLocalInputValue(now.toISOString());
+          }
+          $("h-entryOverlay").classList.add("open");
+        }
+        function closeEntryForm() { $("h-entryOverlay").classList.remove("open"); }
+
+        $("h-addEntryBtn").addEventListener("click", function () { openEntryForm(null); });
+        $("h-entryCancel").addEventListener("click", closeEntryForm);
+        $("h-entryOverlay").addEventListener("click", function (ev) {
+          if (ev.target === $("h-entryOverlay")) closeEntryForm();
+        });
+        $("h-entrySave").addEventListener("click", function () {
+          var name = $("h-fName").value.trim();
+          var activity = $("h-fActivity").value.trim();
+          var startVal = $("h-fStart").value, endVal = $("h-fEnd").value;
+          var err = $("h-entryError");
+          function fail(msg) { err.textContent = msg; err.classList.add("show"); }
+          if (!name) return fail("Please enter the volunteer's name.");
+          if (!activity) return fail("Please add a task or activity.");
+          if (!startVal || !endVal) return fail("Please set both a start and an end time.");
+          var start = new Date(startVal), end = new Date(endVal);
+          if (isNaN(start.getTime()) || isNaN(end.getTime())) return fail("Those times don't look right — please check them.");
+          if (end <= start) return fail("The end time needs to be after the start time.");
+          err.classList.remove("show");
+          if (editingId) {
+            for (var i = 0; i < shifts.length; i++) {
+              if (shifts[i].id === editingId) {
+                shifts[i].name = name; shifts[i].activity = activity;
+                shifts[i].start = start.toISOString(); shifts[i].end = end.toISOString();
+              }
+            }
+          } else {
+            shifts.push({ id: uid(), name: name, activity: activity, start: start.toISOString(), end: end.toISOString() });
+          }
+          shifts.sort(function (a, b) { return new Date(b.start) - new Date(a.start); });
+          save(LS_SHIFTS, shifts);
+          save(LS_NAME, name);
+          closeEntryForm();
+          renderAll();
+        });
+
+        /* ---------- delete ---------- */
+        var deletingId = null;
+        function openDeleteConfirm(shift) {
+          deletingId = shift.id;
+          var d = new Date(shift.end) - new Date(shift.start);
+          $("h-deleteDetail").textContent = shift.name + " · " + shift.activity + " · " + fmtTimeRange(shift) +
+            " (" + fmtDuration(d > 0 ? d : 0) + "). This can't be undone.";
+          $("h-deleteOverlay").classList.add("open");
+        }
+        function closeDelete() { $("h-deleteOverlay").classList.remove("open"); deletingId = null; }
+        $("h-deleteCancel").addEventListener("click", closeDelete);
+        $("h-deleteOverlay").addEventListener("click", function (ev) {
+          if (ev.target === $("h-deleteOverlay")) closeDelete();
+        });
+        $("h-deleteConfirm").addEventListener("click", function () {
+          shifts = shifts.filter(function (s) { return s.id !== deletingId; });
+          save(LS_SHIFTS, shifts);
+          closeDelete();
+          renderAll();
+        });
+
+        /* ---------- CSV export + reminder ---------- */
+        function csvCell(v) {
+          var s = String(v == null ? "" : v);
+          if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+          return s;
+        }
+        function exportCSV() {
+          var lines = ["Date,Volunteer,Activity,Start,End,Duration (hours)"];
+          var sorted = shifts.slice().sort(function (a, b) { return new Date(a.start) - new Date(b.start); });
+          sorted.forEach(function (s) {
+            var start = new Date(s.start), end = new Date(s.end);
+            var ms = end - start; if (ms < 0) ms = 0;
+            lines.push([
+              start.toLocaleDateString("en-CA"),
+              csvCell(s.name),
+              csvCell(s.activity),
+              start.toLocaleString("en-US", { hour12: false }),
+              end.toLocaleString("en-US", { hour12: false }),
+              fmtHours(ms)
+            ].join(","));
+          });
+          var csvText = lines.join("\r\n");
+          var blob = new Blob(["\ufeff" + csvText], { type: "text/csv;charset=utf-8" });
+          var now = new Date();
+          var fname = "faithworks-volunteer-hours-" + now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate()) + ".csv";
+
+          function markExported() {
+            save(LS_EXPORT_COUNT, shifts.length);
+            renderReminder();
+          }
+
+          // iOS Share Sheet (works when downloads are blocked)
+          if (navigator.share) {
+            try {
+              var file = new File([blob], fname, { type: "text/csv" });
+              if (!navigator.canShare || navigator.canShare({ files: [file] })) {
+                navigator.share({ files: [file], title: "Hours Export" }).then(markExported).catch(function(){});
+                return;
+              }
+            } catch (e) {}
+          }
+          // Fallback: show CSV in a copyable popup
+          var w = window.open("", "_blank");
+          if (w) {
+            w.document.write("<html><head><title>Copy CSV</title><meta name='viewport' content='width=device-width,initial-scale=1'></head><body style='font-family:sans-serif;padding:16px;'>");
+            w.document.write("<h3>Copy your CSV</h3><p>Downloads are blocked here &mdash; long-press to copy:</p>");
+            w.document.write("<textarea rows='20' style='width:100%;font-family:monospace;font-size:11px;'>" + csvText.replace(/&/g,"&amp;").replace(/</g,"&lt;") + "</textarea>");
+            w.document.write("</body></html>");
+            w.document.close();
+            markExported();
+            return;
+          }
+          // Last resort: regular download
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = url;
+          a.download = fname;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+          markExported();
+        }
+        function shiftsSinceExport() {
+          return shifts.length - (load(LS_EXPORT_COUNT, 0) || 0);
+        }
+        function renderReminder() {
+          var since = shiftsSinceExport();
+          var dismissedAt = load(LS_REMIND_DISMISSED_AT, -1);
+          var show = since >= REMIND_EVERY && dismissedAt !== shifts.length;
+          $("h-exportReminder").hidden = !show;
+          if (show) {
+            $("h-exportReminderText").textContent = "You've logged " + since + " shifts since your last CSV export. " +
+              "Download a backup now so your hours are safe even if this phone's browser data gets cleared.";
+          }
+        }
+        $("h-exportBtn").addEventListener("click", exportCSV);
+        $("h-reminderExport").addEventListener("click", exportCSV);
+        $("h-reminderDismiss").addEventListener("click", function () {
+          save(LS_REMIND_DISMISSED_AT, shifts.length);
+          $("h-exportReminder").hidden = true;
+        });
+
+        /* ---------- init ---------- */
+        var lastName = load(LS_NAME, "");
+        if (lastName) $("h-inName").value = lastName;
+        renderClock();
+        renderAll();
+      })();
+    
+})();
+</script>
+</body>
+</html>
