@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prayer Wall — Faithworks Foundation Inc.</title>
+<style>
+  :root{
+    --navy:#17385f; --navy-dark:#1B2A4A; --gold:#d39b31; --gold-bright:#D4A017;
+    --cream:#FBF7EF; --card:#ffffff; --ink:#2b2b2b; --muted:#6b7280;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background:var(--cream); color:var(--ink); line-height:1.55;}
+  .wrap{max-width:860px; margin:0 auto; padding:0 16px 40px;}
+
+  /* Header */
+  header{text-align:center; padding:40px 16px 8px; position:relative;}
+  header::before{content:""; position:absolute; inset:0; background:radial-gradient(ellipse 340px 150px at 50% 30px, rgba(211,155,49,.28), transparent 70%); pointer-events:none;}
+  .flame{font-size:40px; filter:drop-shadow(0 0 14px rgba(212,160,23,.75));}
+  h1{font-family:Georgia, "Times New Roman", serif; color:var(--navy); font-size:40px; letter-spacing:.5px; margin-top:6px;}
+  .tagline{color:var(--gold); font-weight:700; letter-spacing:2px; text-transform:uppercase; font-size:12px; margin-top:4px;}
+  .verse{font-family:Georgia, serif; font-style:italic; color:var(--navy-dark); font-size:17px; max-width:560px; margin:18px auto 0; min-height:52px; transition:opacity .6s;}
+  .verse small{display:block; font-style:normal; font-family:inherit; font-size:12.5px; color:var(--muted); margin-top:5px; letter-spacing:1px;}
+  .intro{max-width:600px; margin:14px auto 0; color:#444; font-size:15.5px;}
+
+  /* Form card */
+  .form-card{background:var(--card); border-radius:16px; box-shadow:0 6px 24px rgba(23,56,95,.10); border-top:5px solid var(--gold); padding:24px; margin-top:26px;}
+  .form-card h2{font-family:Georgia, serif; color:var(--navy); font-size:23px; margin-bottom:4px;}
+  .form-card p.sub{color:var(--muted); font-size:14px; margin-bottom:14px;}
+  label{display:block; font-size:13px; font-weight:600; color:var(--navy-dark); margin:13px 0 5px;}
+  label span{font-weight:400; color:var(--muted);}
+  input[type=text], select, textarea{width:100%; padding:11px 12px; border:1.5px solid #ddd6c4; border-radius:10px; font-size:16px; font-family:inherit; background:#fffdf8; color:var(--ink);}
+  input:focus, select:focus, textarea:focus{outline:none; border-color:var(--gold);}
+  textarea{resize:vertical; min-height:92px;}
+  .row{display:flex; gap:12px;} .row > div{flex:1;}
+  .private-row{display:flex; gap:9px; align-items:flex-start; margin-top:15px; background:#fdf6e3; border:1px solid #eee0b8; border-radius:10px; padding:11px 12px;}
+  .private-row input{margin-top:3px; width:17px; height:17px; accent-color:var(--navy);}
+  .private-row span{font-size:13.5px; color:#5b4a12;}
+  .submit-btn{width:100%; margin-top:18px; background:var(--navy); color:#fff; border:none; border-radius:11px; padding:14px; font-size:16.5px; font-weight:700; cursor:pointer; letter-spacing:.3px;}
+  .submit-btn:active{transform:scale(.99);}
+  .submit-btn:disabled{opacity:.6;}
+  .thanks{display:none; text-align:center; padding:16px 6px 6px;}
+  .thanks .big{font-size:30px;}
+  .thanks h3{font-family:Georgia, serif; color:var(--navy); margin:6px 0 4px;}
+  .thanks p{color:#444; font-size:14.5px; max-width:440px; margin:0 auto;}
+  .another-btn{margin-top:14px; background:transparent; border:1.5px solid var(--navy); color:var(--navy); border-radius:999px; padding:8px 18px; font-size:14px; font-weight:700; cursor:pointer;}
+
+  /* Filters */
+  .filters{display:flex; flex-wrap:wrap; gap:8px; margin:32px 0 6px; justify-content:center;}
+  .chip{border:1.5px solid var(--navy); color:var(--navy); background:transparent; border-radius:999px; padding:6px 14px; font-size:13.5px; font-weight:600; cursor:pointer;}
+  .chip.on{background:var(--navy); color:#fff;}
+  .wall-note{text-align:center; color:var(--muted); font-size:13px; margin-top:10px;}
+
+  /* Wall */
+  .wall{display:grid; grid-template-columns:1fr; gap:16px; margin-top:16px;}
+  @media(min-width:660px){ .wall{grid-template-columns:1fr 1fr;} }
+  .card{background:var(--card); border-radius:14px; padding:19px 19px 15px; box-shadow:0 4px 16px rgba(23,56,95,.08); border-left:5px solid var(--gold); display:flex; flex-direction:column;}
+  .card.answered{border-left-color:#3d9970; background:linear-gradient(180deg,#f4fbf7,#ffffff);}
+  .card .meta{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:7px;}
+  .card .name{font-weight:700; color:var(--navy-dark); font-size:15.5px;}
+  .card .town{color:var(--muted); font-size:13px;}
+  .card .when{color:var(--muted); font-size:12px; margin-left:auto;}
+  .cat{font-size:11px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; background:#fdf3d8; color:#8a6410; border-radius:999px; padding:3px 9px;}
+  .answered-badge{font-size:11px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; background:#e2f4ea; color:#1e6b46; border-radius:999px; padding:3px 9px;}
+  .card .req{font-size:15px; color:#333; white-space:pre-wrap; word-wrap:break-word;}
+  .pray-row{margin-top:13px; display:flex; align-items:center; gap:10px;}
+  .pray-btn{border:1.5px solid var(--gold); background:#fff; color:#8a6410; border-radius:999px; padding:7px 15px; font-size:13.5px; font-weight:700; cursor:pointer;}
+  .pray-btn.prayed{background:var(--gold); color:#fff; border-color:var(--gold);}
+  .pray-count{font-size:13px; color:var(--muted);}
+  .stats{display:none; gap:26px; justify-content:center; margin-top:18px; flex-wrap:wrap;}
+  .stats .num{font-family:Georgia, serif; font-size:25px; color:var(--navy); font-weight:700; line-height:1.1;}
+  .stats .lbl{font-size:10.5px; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); font-weight:700;}
+  .share-btn{margin-left:auto; border:1.5px solid #ddd6c4; background:#fff; color:var(--navy); border-radius:999px; padding:7px 13px; font-size:13px; font-weight:700; cursor:pointer;}
+  @keyframes pulseGlow{0%{box-shadow:0 0 0 0 rgba(212,160,23,.55);}100%{box-shadow:0 0 0 16px rgba(212,160,23,0);}}
+  .pray-btn.boom{animation:pulseGlow .6s ease-out;}
+  .wall-share{margin-top:12px; background:var(--gold); color:#fff; border:none; border-radius:999px; padding:10px 20px; font-size:14px; font-weight:700; cursor:pointer;}
+
+  /* Comments */
+  .comments{border-top:1px solid #f0e9d8; margin-top:14px; padding-top:11px;}
+  .comment{padding:7px 0; border-bottom:1px dashed #f3ecd9;}
+  .comment:last-of-type{border-bottom:none;}
+  .comment .c-name{font-weight:700; font-size:13px; color:var(--navy-dark);}
+  .comment .c-when{font-size:11.5px; color:var(--muted); margin-left:6px;}
+  .comment .c-text{font-size:14px; color:#3a3a3a; white-space:pre-wrap; word-wrap:break-word;}
+  .view-all{background:none; border:none; color:var(--navy); font-weight:700; font-size:13px; cursor:pointer; padding:6px 0 2px;}
+  .c-form{margin-top:10px; display:flex; flex-direction:column; gap:7px;}
+  .c-form input[type=text]{padding:9px 11px; font-size:14px;}
+  .c-form .c-name-input{max-width:200px;}
+  .c-post{align-self:flex-end; background:var(--navy); color:#fff; border:none; border-radius:999px; padding:8px 18px; font-size:13.5px; font-weight:700; cursor:pointer;}
+  .c-note{font-size:12.5px; color:#8a6410; display:none;}
+
+  .empty{background:var(--card); border-radius:14px; padding:30px 22px; text-align:center; box-shadow:0 4px 16px rgba(23,56,95,.08); margin-top:16px;}
+  .empty .big{font-size:30px;}
+  .empty h3{font-family:Georgia, serif; color:var(--navy); margin:6px 0 4px;}
+  .empty p{color:#555; font-size:14.5px;}
+  .preview-flag{display:none; text-align:center; margin-top:14px; font-size:12.5px; color:#8a6410; background:#fdf6e3; border:1px dashed var(--gold); border-radius:10px; padding:8px 12px;}
+
+  footer{text-align:center; margin-top:40px; color:var(--muted); font-size:13px; line-height:1.9;}
+  footer .heart{color:var(--gold);}
+  footer a{color:var(--navy); text-decoration:none; font-weight:600;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="flame">🕯️</div>
+    <h1>Prayer Wall</h1>
+    <div class="tagline">Be the Light · Be the Hope</div>
+    <div class="verse" id="verse"></div>
+    <p class="intro">Whatever you're carrying, you don't have to carry it alone. Leave a prayer below, pray for someone else's, and leave them a kind word — because everybody deserves light and hope.</p>
+    <div class="stats" id="stats">
+      <div><div class="num" id="statPrayers">0</div><div class="lbl">Prayers shared</div></div>
+      <div><div class="num" id="statPraying">0</div><div class="lbl">People praying</div></div>
+      <div><div class="num" id="statAnswered">0</div><div class="lbl">Answered 🙌</div></div>
+    </div>
+  </header>
+
+  <section class="form-card" id="formCard">
+    <h2>Share a Prayer Request</h2>
+    <p class="sub">It posts to the wall right away. First name only is fine — or stay completely anonymous.</p>
+    <form id="prayerForm">
+      <div class="row">
+        <div>
+          <label for="fName">First name <span>(or leave blank for Anonymous)</span></label>
+          <input type="text" id="fName" maxlength="40" placeholder="e.g. Sarah" autocomplete="off">
+        </div>
+        <div>
+          <label for="fTown">Town <span>(optional)</span></label>
+          <input type="text" id="fTown" maxlength="40" placeholder="e.g. Salisbury" autocomplete="off">
+        </div>
+      </div>
+      <label for="fCat">What is it about?</label>
+      <select id="fCat">
+        <option>Family</option>
+        <option>Health</option>
+        <option>Work &amp; Money</option>
+        <option>Grief &amp; Loss</option>
+        <option>Thanksgiving &amp; Praise</option>
+        <option selected>Other</option>
+      </select>
+      <label for="fReq">Your prayer request</label>
+      <textarea id="fReq" maxlength="500" placeholder="Tell us what you'd like prayer for..." required></textarea>
+      <div class="private-row">
+        <input type="checkbox" id="fPrivate">
+        <span><strong>Keep this private.</strong> Don't post it on the wall — it goes straight to our team and we'll pray for you quietly.</span>
+      </div>
+      <button type="submit" class="submit-btn" id="submitBtn">Post My Prayer 🙏</button>
+    </form>
+    <div class="thanks" id="thanksBox">
+      <div class="big">💛</div>
+      <h3 id="thanksTitle">It's on the wall — and we're praying.</h3>
+      <p id="thanksText">Thank you for trusting us with this. Scroll down and you'll see it — and every 🙏 and kind word from here on is someone standing with you.</p>
+      <button class="another-btn" id="anotherBtn">Post another prayer</button>
+      <br>
+      <button class="wall-share" id="shareWallBtn">↗ Invite others to pray too</button>
+    </div>
+  </section>
+
+  <div class="filters" id="filters"></div>
+  <p class="wall-note">Tap <strong>🙏 I'm praying</strong> to stand with someone, and leave a comment to encourage them.</p>
+  <div class="preview-flag" id="previewFlag">👀 Preview — these are sample prayers so you can see how the wall looks. Real prayers will replace them once the wall is live.</div>
+
+  <div class="wall" id="wall"></div>
+  <div class="empty" id="emptyBox" style="display:none">
+    <div class="big">🕊️</div>
+    <h3>The wall is waiting for its first prayer</h3>
+    <p>Be the first to share a request above — someone will be praying for you today.</p>
+  </div>
+
+  <footer>
+    <span class="heart">💛</span> Faithworks Foundation Inc. — Faith in Action. Hope on the Eastern Shore.<br>
+    <a href="https://www.faithworksfoundation.com/" target="_blank" rel="noopener">faithworksfoundation.com</a> · info@faithworksfoundation.com<br>
+    Because everybody deserves light and hope.
+  </footer>
+</div>
+
+<script>
+var API = 'https://script.google.com/macros/s/AKfycbxPakiznzBu63HDAJveKc2BmK8zM-4BM76ZqMV9vsZy9RunPFrH7Y9IlrVOGlj264_7/exec';
+
+/* When embedded on the Squarespace page, tell the parent how tall we are */
+function sendHeight(){
+  try {
+    if (window.parent !== window) {
+      window.parent.postMessage({ fwPrayerHeight: document.documentElement.scrollHeight }, '*');
+    }
+  } catch(e){}
+}
+window.addEventListener('resize', sendHeight);
+
+/* Filter mirror (matches the backend): clean posts show instantly,
+   flagged ones quietly wait for Bozhidar's review */
+var FLAG_WORDS = ['fuck','shit','bitch','whore','slut','cunt','nigger','nigga','faggot','porn','viagra','onlyfans'];
+var FLAG_PARTS = ['http://','https://','www.','bitcoin','crypto casino','casino','telegram','whatsapp me','make money fast','free money'];
+function isFlagged(text){
+  var clean = ' ' + String(text || '').toLowerCase().replace(/[^a-z0-9 ]/g,' ') + ' ';
+  for (var i = 0; i < FLAG_WORDS.length; i++){ if (clean.indexOf(' ' + FLAG_WORDS[i] + ' ') !== -1) return true; }
+  var raw = String(text || '').toLowerCase();
+  for (var j = 0; j < FLAG_PARTS.length; j++){ if (raw.indexOf(FLAG_PARTS[j]) !== -1) return true; }
+  return false;
+}
+
+/* Rotating verses */
+var VERSES = [
+  { t: '"Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God."', r: 'Philippians 4:6' },
+  { t: '"For where two or three gather in my name, there am I with them."', r: 'Matthew 18:20' },
+  { t: '"The prayer of a righteous person is powerful and effective."', r: 'James 5:16' },
+  { t: '"Cast all your anxiety on him because he cares for you."', r: '1 Peter 5:7' }
+];
+var vIdx = 0, verseEl = document.getElementById('verse');
+function showVerse(){
+  verseEl.style.opacity = 0;
+  setTimeout(function(){
+    verseEl.innerHTML = VERSES[vIdx].t + '<small>' + VERSES[vIdx].r + '</small>';
+    verseEl.style.opacity = 1;
+    vIdx = (vIdx + 1) % VERSES.length;
+    sendHeight();
+  }, 350);
+}
+verseEl.innerHTML = VERSES[0].t + '<small>' + VERSES[0].r + '</small>'; vIdx = 1;
+setInterval(showVerse, 9000);
+
+/* Sample prayers for preview mode (only if the live wall can't be reached yet) */
+var SAMPLES = [
+  { id:'s1', name:'A neighbor', town:'Ocean Pines', category:'Health', request:'Please pray for my mom — she starts treatment next week and our family is scared. We need strength and good news.', count:24, status:'Approved', ts: Date.now() - 1000*60*60*5,
+    comments:[
+      { id:'sc1', name:'Debbie', comment:'Praying for your mom and your whole family tonight. 🙏', ts: Date.now() - 1000*60*60*4 },
+      { id:'sc2', name:'Anonymous', comment:'Standing with you. She is not alone and neither are you.', ts: Date.now() - 1000*60*60*2 }
+    ]},
+  { id:'s2', name:'Anonymous', town:'', category:'Work & Money', request:'Lost my job last month and rent is coming due. Praying for a door to open soon.', count:41, status:'Approved', ts: Date.now() - 1000*60*60*26,
+    comments:[ { id:'sc3', name:'Mark', comment:'Prayed for you this morning. Keep knocking — the door will open.', ts: Date.now() - 1000*60*60*20 } ]},
+  { id:'s3', name:'Marcus', town:'Salisbury', category:'Thanksgiving & Praise', request:'UPDATE: my daughter came home from the hospital yesterday! Thank you to everyone who prayed for us — God is good.', count:63, status:'Answered', ts: Date.now() - 1000*60*60*50, comments:[] }
+];
+
+var CATEGORIES = ['All', 'Family', 'Health', 'Work & Money', 'Grief & Loss', 'Thanksgiving & Praise', 'Other', 'Answered'];
+var activeFilter = 'All';
+var prayers = [];
+var previewMode = false;
+var expandedComments = {};
+
+function prayedSet(){
+  try { return JSON.parse(localStorage.getItem('fw_prayed') || '[]'); } catch(e){ return []; }
+}
+function markPrayed(id){
+  var s = prayedSet(); if (s.indexOf(id) === -1){ s.push(id); try{ localStorage.setItem('fw_prayed', JSON.stringify(s)); }catch(e){} }
+}
+function timeAgo(ts){
+  if (!ts) return '';
+  var s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 3600) return 'just now';
+  if (s < 86400) return Math.floor(s/3600) + 'h ago';
+  var d = Math.floor(s/86400);
+  return d === 1 ? '1 day ago' : d + ' days ago';
+}
+function esc(str){
+  return String(str || '').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; });
+}
+function post(payload){
+  try { fetch(API, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body: JSON.stringify(payload) }); } catch(e){}
+}
+
+/* Social proof strip + sharing — how a wall like this travels */
+var WALL_URL = 'https://www.faithworksfoundation.com/prayer-wall';
+function updateStats(){
+  var el = document.getElementById('stats');
+  if (!prayers.length){ el.style.display = 'none'; return; }
+  var pp = prayers.reduce(function(a,p){ return a + (p.count || 0); }, 0);
+  var an = prayers.filter(function(p){ return p.status === 'Answered'; }).length;
+  document.getElementById('statPrayers').textContent = prayers.length;
+  document.getElementById('statPraying').textContent = pp;
+  document.getElementById('statAnswered').textContent = an;
+  el.style.display = 'flex';
+}
+function shareText(p){
+  return '🙏 Please pray with me:\n\n"' + p.request + '"\n\n— ' + p.name + (p.town ? ' (' + p.town + ')' : '') + '\n\nJoin the Faithworks Prayer Wall:';
+}
+function doShare(text){
+  if (navigator.share){
+    navigator.share({ title:'Faithworks Prayer Wall', text:text, url:WALL_URL }).catch(function(){});
+  } else if (navigator.clipboard){
+    navigator.clipboard.writeText(text + ' ' + WALL_URL).then(function(){ alert('Copied 💛 Paste it anywhere to share.'); });
+  } else {
+    window.prompt('Copy this link to share:', WALL_URL);
+  }
+}
+
+function renderFilters(){
+  var box = document.getElementById('filters');
+  box.innerHTML = '';
+  CATEGORIES.forEach(function(cat){
+    var b = document.createElement('button');
+    b.className = 'chip' + (activeFilter === cat ? ' on' : '');
+    b.textContent = cat === 'Answered' ? '✅ Answered' : cat;
+    b.onclick = function(){ activeFilter = cat; renderFilters(); renderWall(); };
+    box.appendChild(b);
+  });
+}
+
+function commentsHtml(p){
+  var list = p.comments || [];
+  var showAll = !!expandedComments[p.id];
+  var visible = showAll ? list : list.slice(-2);
+  var html = '<div class="comments" data-comments-for="' + esc(p.id) + '">';
+  visible.forEach(function(c){
+    html += '<div class="comment"><span class="c-name">' + esc(c.name) + '</span><span class="c-when">' + timeAgo(c.ts) + '</span><div class="c-text">' + esc(c.comment) + '</div></div>';
+  });
+  if (!showAll && list.length > 2){
+    html += '<button class="view-all" data-viewall="' + esc(p.id) + '">💬 View all ' + list.length + ' comments</button>';
+  }
+  html += '<form class="c-form" data-cform="' + esc(p.id) + '">' +
+    '<input type="text" class="c-name-input" maxlength="40" placeholder="Name (or Anonymous)">' +
+    '<input type="text" class="c-text-input" maxlength="300" placeholder="Leave an encouraging word...">' +
+    '<span class="c-note">Thanks — your comment is with our team for a quick review and will appear soon. 💛</span>' +
+    '<button type="submit" class="c-post">Post comment</button></form>';
+  html += '</div>';
+  return html;
+}
+
+function renderWall(){
+  var wall = document.getElementById('wall');
+  var empty = document.getElementById('emptyBox');
+  wall.innerHTML = '';
+  updateStats();
+  var list = prayers.filter(function(p){
+    if (activeFilter === 'All') return true;
+    if (activeFilter === 'Answered') return p.status === 'Answered';
+    return p.category === activeFilter;
+  });
+  if (!list.length){
+    if (!previewMode && prayers.length === 0 && activeFilter === 'All'){ empty.style.display = 'block'; }
+    else { empty.style.display = 'none';
+      wall.innerHTML = '<div class="empty" style="grid-column:1/-1"><p>No prayers in this category yet — try another one above.</p></div>'; }
+    sendHeight();
+    return;
+  }
+  empty.style.display = 'none';
+  var prayed = prayedSet();
+  list.forEach(function(p){
+    var card = document.createElement('div');
+    card.className = 'card' + (p.status === 'Answered' ? ' answered' : '');
+    var already = prayed.indexOf(p.id) !== -1;
+    card.innerHTML =
+      '<div class="meta"><span class="name">' + esc(p.name) + '</span>' +
+      (p.town ? '<span class="town">· ' + esc(p.town) + '</span>' : '') +
+      '<span class="when">' + timeAgo(p.ts) + '</span></div>' +
+      '<div class="meta"><span class="cat">' + esc(p.category) + '</span>' +
+      (p.status === 'Answered' ? '<span class="answered-badge">✅ Answered</span>' : '') + '</div>' +
+      '<div class="req">' + esc(p.request) + '</div>' +
+      '<div class="pray-row"><button class="pray-btn' + (already ? ' prayed' : '') + '" data-pray="' + esc(p.id) + '">' + (already ? '🙏 Praying' : '🙏 I\'m praying') + '</button>' +
+      '<span class="pray-count">' + (p.count > 0 ? p.count + (p.count === 1 ? ' person praying' : ' people praying') : 'Be the first to pray') + '</span>' +
+      '<button class="share-btn" data-share="' + esc(p.id) + '">↗ Share</button></div>' +
+      commentsHtml(p);
+    wall.appendChild(card);
+  });
+
+  wall.querySelectorAll('[data-pray]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var id = btn.getAttribute('data-pray');
+      if (prayedSet().indexOf(id) !== -1) return;
+      markPrayed(id);
+      var target = null;
+      prayers.forEach(function(p){ if (p.id === id){ p.count++; target = p; } });
+      btn.classList.add('prayed', 'boom');
+      btn.textContent = '🙏 Praying';
+      var span = btn.parentElement.querySelector('.pray-count');
+      if (target && span) span.textContent = target.count + (target.count === 1 ? ' person praying' : ' people praying');
+      updateStats();
+      if (!previewMode) post({ type:'pray', id:id });
+      setTimeout(sendHeight, 650);
+    });
+  });
+  wall.querySelectorAll('[data-share]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var id = btn.getAttribute('data-share');
+      prayers.forEach(function(p){ if (p.id === id) doShare(shareText(p)); });
+    });
+  });
+  wall.querySelectorAll('[data-viewall]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      expandedComments[btn.getAttribute('data-viewall')] = true;
+      renderWall();
+    });
+  });
+  wall.querySelectorAll('[data-cform]').forEach(function(form){
+    form.addEventListener('submit', function(ev){
+      ev.preventDefault();
+      var pid = form.getAttribute('data-cform');
+      var nameEl = form.querySelector('.c-name-input');
+      var textEl = form.querySelector('.c-text-input');
+      var text = textEl.value.trim();
+      if (!text) return;
+      var name = nameEl.value.trim() || 'Anonymous';
+      var flagged = isFlagged(name + ' ' + text);
+      if (flagged){
+        form.querySelector('.c-note').style.display = 'block';
+        textEl.value = '';
+      } else {
+        prayers.forEach(function(p){
+          if (p.id === pid){ p.comments = p.comments || []; p.comments.push({ id:'tmp' + Date.now(), name:name, comment:text, ts:Date.now() }); }
+        });
+        expandedComments[pid] = true;
+        renderWall();
+      }
+      if (!previewMode) post({ type:'comment', prayerId: pid, name: name, comment: text });
+      sendHeight();
+    });
+  });
+  sendHeight();
+}
+
+function loadWall(){
+  fetch(API + '?action=prayers')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if (!data || !Array.isArray(data.prayers)) throw new Error('backend not upgraded yet');
+      prayers = data.prayers;
+      prayers.forEach(function(p){ if (!p.comments) p.comments = []; });
+      previewMode = false;
+      document.getElementById('previewFlag').style.display = 'none';
+      renderWall();
+    })
+    .catch(function(){
+      /* Backend not live yet — show samples so the design can be previewed */
+      prayers = JSON.parse(JSON.stringify(SAMPLES));
+      previewMode = true;
+      document.getElementById('previewFlag').style.display = 'block';
+      renderWall();
+    });
+}
+renderFilters();
+loadWall();
+
+/* Submit a prayer request */
+var prayerForm = document.getElementById('prayerForm');
+prayerForm.addEventListener('submit', function(ev){
+  ev.preventDefault();
+  var req = document.getElementById('fReq').value.trim();
+  if (!req) return;
+  var btn = document.getElementById('submitBtn');
+  btn.disabled = true; btn.textContent = 'Posting...';
+  var isPrivate = document.getElementById('fPrivate').checked;
+  var name = document.getElementById('fName').value.trim();
+  var payload = {
+    type: 'prayer',
+    name: name,
+    town: document.getElementById('fTown').value.trim(),
+    category: document.getElementById('fCat').value,
+    request: req,
+    private: isPrivate ? 'yes' : 'no'
+  };
+  post(payload);
+  setTimeout(function(){
+    prayerForm.style.display = 'none';
+    var title = document.getElementById('thanksTitle');
+    var text = document.getElementById('thanksText');
+    if (isPrivate){
+      title.textContent = 'We got it — and it stays private.';
+      text.textContent = 'Your request went straight to our team. It will never appear on the wall, and we\'ll be praying for you quietly.';
+    } else if (isFlagged(name + ' ' + req)){
+      title.textContent = 'We got it — quick review first.';
+      text.textContent = 'Thanks for sharing this with us. Our team gives every prayer a quick look, and yours will be on the wall shortly.';
+    } else {
+      title.textContent = 'It\'s on the wall — and we\'re praying.';
+      text.textContent = 'Thank you for trusting us with this. Scroll down and you\'ll see it — and every 🙏 and kind word from here on is someone standing with you.';
+      loadWall();
+    }
+    document.getElementById('thanksBox').style.display = 'block';
+    document.getElementById('formCard').scrollIntoView({ behavior:'smooth', block:'center' });
+    sendHeight();
+  }, 900);
+});
+document.getElementById('shareWallBtn').addEventListener('click', function(){
+  doShare('🕯️ The Faithworks Prayer Wall — leave a prayer, or come pray for someone who needs it today. Everybody deserves light and hope.');
+});
+document.getElementById('anotherBtn').addEventListener('click', function(){
+  prayerForm.reset();
+  prayerForm.style.display = 'block';
+  document.getElementById('thanksBox').style.display = 'none';
+  var btn = document.getElementById('submitBtn');
+  btn.disabled = false; btn.textContent = 'Post My Prayer 🙏';
+  sendHeight();
+});
+window.addEventListener('load', sendHeight);
+</script>
+</body>
+</html>
